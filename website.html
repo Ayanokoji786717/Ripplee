@@ -1,0 +1,1748 @@
+``html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIPPLE — Complex ideas. Beautifully understood.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ripple: {
+              bg: '#faf8ff',
+              lavender: '#ede9fe',
+              indigo: '#312e81',
+              violet: '#6d28d9'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      background: radial-gradient(circle at top right, #f3e8ff 0%, #faf8ff 40%, #ffffff 100%);
+      color: #1e1b4b;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    .fade-in { animation: fadeIn 0.22s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media print {
+      body { background: #ffffff !important; color: #111827 !important; }
+      .no-print { display: none !important; }
+      .print-break-avoid { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="flex min-h-screen flex-col antialiased">
+
+  <!-- TOP NAVBAR -->
+  <header class="no-print sticky top-0 z-40 border-b border-violet-100 bg-white/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
+      <button type="button" onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left transition-opacity hover:opacity-90">
+        <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect width="40" height="40" rx="12" fill="url(#rippleLogoGrad)" />
+          <circle cx="20" cy="20" r="12" stroke="#DDD6FE" stroke-opacity="0.55" stroke-width="1.75" />
+          <circle cx="20" cy="20" r="7.5" stroke="#EDE9FE" stroke-opacity="0.85" stroke-width="1.75" />
+          <circle cx="20" cy="20" r="3.2" fill="#FFFFFF" />
+          <defs>
+            <linearGradient id="rippleLogoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#312E81" />
+              <stop offset="1" stop-color="#6D28D9" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div>
+          <div class="text-lg font-extrabold tracking-tight text-indigo-950 leading-none">RIPPLE</div>
+          <div class="text-[11px] font-medium text-violet-600 leading-tight">Visual Problem Solving</div>
+        </div>
+      </button>
+
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Main navigation">
+        <button type="button" data-nav="home" onclick="navigateTo('home')" class="nav-btn rounded-xl px-4 py-2 text-sm font-medium transition">Home</button>
+        <button type="button" data-nav="explore" onclick="navigateTo('explore')" class="nav-btn rounded-xl px-4 py-2 text-sm font-medium transition">Explore</button>
+        <button type="button" data-nav="saved" onclick="navigateTo('saved')" class="nav-btn rounded-xl px-4 py-2 text-sm font-medium transition">Saved</button>
+        <button type="button" data-nav="about" onclick="navigateTo('about')" class="nav-btn rounded-xl px-4 py-2 text-sm font-medium transition">About</button>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="apiStatusBtn" onclick="openApiModal()" class="rounded-xl border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-indigo-950 transition hover:bg-violet-100">
+          Demo Mode · API Key
+        </button>
+        <button type="button" onclick="toggleMobileMenu()" class="rounded-lg p-2 text-indigo-950 hover:bg-violet-50 md:hidden" aria-label="Toggle menu">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobileMenu" class="hidden border-t border-violet-100 bg-white px-4 py-3 md:hidden">
+      <div class="flex flex-col gap-1">
+        <button type="button" onclick="navigateTo('home'); toggleMobileMenu(false)" class="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-slate-700 hover:bg-violet-50">Home</button>
+        <button type="button" onclick="navigateTo('explore'); toggleMobileMenu(false)" class="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-slate-700 hover:bg-violet-50">Explore</button>
+        <button type="button" onclick="navigateTo('saved'); toggleMobileMenu(false)" class="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-slate-700 hover:bg-violet-50">Saved</button>
+        <button type="button" onclick="navigateTo('about'); toggleMobileMenu(false)" className="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-slate-700 hover:bg-violet-50" class="rounded-xl px-3.5 py-2 text-left text-sm font-medium text-slate-700 hover:bg-violet-50">About</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP VIEWPORT -->
+  <main id="appMain" class="flex-1"></main>
+
+  <!-- FOOTER -->
+  <footer class="no-print mt-20 border-t border-violet-100 bg-white/80">
+    <div class="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center sm:px-6">
+      <div>
+        <p class="text-sm font-bold text-indigo-950">RIPPLE</p>
+        <p class="text-xs text-slate-500">Complex ideas. Beautifully understood.</p>
+      </div>
+      <div class="flex flex-wrap gap-5 text-sm text-slate-600">
+        <button type="button" onclick="navigateTo('home')" class="hover:text-violet-700">Home</button>
+        <button type="button" onclick="navigateTo('explore')" class="hover:text-violet-700">Explore</button>
+        <button type="button" onclick="navigateTo('saved')" class="hover:text-violet-700">Saved</button>
+        <button type="button" onclick="navigateTo('about')" class="hover:text-violet-700">About</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- OPTIONAL GEMINI API KEY MODAL -->
+  <div id="apiModal" class="no-print fixed inset-0 z-50 hidden items-center justify-center bg-indigo-950/50 p-4 backdrop-blur-xs">
+    <div class="w-full max-w-md rounded-3xl border border-violet-200 bg-white p-6 shadow-2xl">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-indigo-950">AI Mode Configuration</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Leave blank for built-in Demo Mode, or paste a personal Google Gemini API key for live AI generation.
+          </p>
+        </div>
+        <button type="button" onclick="closeApiModal()" class="rounded-lg p-1 text-slate-400 hover:bg-violet-50 hover:text-indigo-950">✕</button>
+      </div>
+
+      <div class="mt-4 space-y-3">
+        <div>
+          <label for="geminiKeyInput" class="block text-xs font-semibold text-indigo-950">Gemini API Key (saved only in your browser)</label>
+          <input id="geminiKeyInput" type="password" placeholder="AIza..." class="mt-1 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-indigo-950 focus:border-violet-500 focus:outline-none" />
+        </div>
+        <div>
+          <label for="geminiModelInput" class="block text-xs font-semibold text-indigo-950">Gemini Model</label>
+          <select id="geminiModelInput" class="mt-1 w-full rounded-xl border border-violet-200 bg-white px-3.5 py-2.5 text-sm text-indigo-950 focus:border-violet-500 focus:outline-none">
+            <option value="gemini-3.8-flash">gemini-3.8-flash (Latest Stable Flash)</option>
+            <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          </select>
+        </div>
+        <p class="rounded-xl bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-900">
+          <strong>Security reminder:</strong> Client-side HTML files store keys in browser <code>localStorage</code>. For public production deployment, use a server-side proxy or the Next.js <code>/api/generate</code> route.
+        </p>
+      </div>
+
+      <div class="mt-5 flex justify-end gap-2">
+        <button type="button" onclick="clearApiKey()" class="rounded-xl border border-rose-200 px-3.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50">Use Demo Mode</button>
+        <button type="button" onclick="saveApiSettings()" class="rounded-xl bg-indigo-900 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-700">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="no-print pointer-events-none fixed bottom-5 right-5 z-50 hidden rounded-xl bg-indigo-950 px-4 py-2.5 text-xs font-semibold text-white shadow-lg"></div>
+
+  <script>
+    // =========================================================================
+    // 1. CONSTANTS, PRESETS & CURATED DATA (ALL 3 DEMO SCENARIOS + 7 CATEGORIES)
+    // =========================================================================
+    const STORAGE_SAVED_KEY = "ripple_html_saved_v1";
+    const STORAGE_PROGRESS_KEY = "ripple_html_progress_v1";
+    const STORAGE_API_KEY = "ripple_html_gemini_key";
+    const STORAGE_MODEL_KEY = "ripple_html_gemini_model";
+
+    const CATEGORIES = [
+      "Education",
+      "Business",
+      "Technology",
+      "Personal Development",
+      "Science",
+      "Creativity",
+      "Everyday Problems"
+    ];
+
+    const HOMEPAGE_EXAMPLES = [
+      "Explain how photosynthesis works.",
+      "How can I manage multiple deadlines?",
+      "How do I start an online business?",
+      "Explain artificial intelligence simply.",
+      "How can I develop better study habits?"
+    ];
+
+    const CATEGORY_CARDS = [
+      { name: "Education", description: "Turn dense textbooks and theories into clear visual mental models.", starterPrompt: "Explain how photosynthesis works." },
+      { name: "Business", description: "Map launches, strategy decisions, and revenue models step by step.", starterPrompt: "I want to start a small online business. Where should I begin?" },
+      { name: "Technology", description: "Demystify AI, software architecture, and emerging tools visually.", starterPrompt: "Explain artificial intelligence simply." },
+      { name: "Personal Development", description: "Build durable habits, focus systems, and learning routines.", starterPrompt: "How can I develop better study habits?" },
+      { name: "Science", description: "See natural systems, cause-and-effect chains, and experiments clearly.", starterPrompt: "How does the scientific method turn a hunch into evidence?" },
+      { name: "Creativity", description: "Break through creative blocks with structured ideation workflows.", starterPrompt: "How do I overcome creative block and finish a project?" },
+      { name: "Everyday Problems", description: "Untangle competing priorities, decisions, and daily overwhelm.", starterPrompt: "I have multiple deadlines and don't know how to organise my work." }
+    ];
+
+    const PRESET_SOLUTIONS = [
+      {
+        slug: "photosynthesis",
+        query: "Explain how photosynthesis works.",
+        shortDescription: "See how plants capture sunlight, split water, and convert CO2 into glucose and oxygen inside chloroplasts.",
+        solution: {
+          title: "How Photosynthesis Works: Turning Sunlight into Chemical Energy",
+          category: "Education",
+          problem_summary: "Photosynthesis is the biological solar-charging process plants, algae, and cyanobacteria use to convert sunlight, water, and carbon dioxide into glucose (stored fuel) and oxygen.",
+          explanation: "Think of a plant leaf as a microscopic solar-powered bakery. Instead of electricity, it captures photons of sunlight using a green pigment called chlorophyll located inside organelles named chloroplasts.\n\nThe process unfolds in two linked stages. First, in the Light-Dependent Reactions (inside thylakoid membranes), sunlight splits water molecules into hydrogen ions, electrons, and oxygen gas—releasing oxygen into the air while charging energy carriers called ATP and NADPH.\n\nSecond, in the Calvin Cycle (inside the chloroplast's stroma fluid), the plant uses those charged ATP and NADPH batteries to stitch carbon dioxide from the air into glucose sugar. The plant burns some of that sugar immediately for growth and stores the rest as starch.",
+          key_concepts: [
+            { name: "Chloroplast & Chlorophyll", definition: "Chloroplasts are the leaf's solar factories; chlorophyll absorbs red and blue light while reflecting green.", importance: "Without chlorophyll capturing light energy, the chemical reactions cannot begin." },
+            { name: "Light-Dependent Reactions", definition: "Stage 1 in the thylakoids where light splits water (H2O), releases O2, and creates ATP + NADPH.", importance: "Supplies the chemical energy required to build sugar in Stage 2." },
+            { name: "Calvin Cycle (Light-Independent)", definition: "Stage 2 in the stroma where CO2 is fixed into 3-carbon molecules and assembled into glucose.", importance: "Converts invisible atmospheric carbon into physical plant food." },
+            { name: "Stomata", definition: "Microscopic leaf pores that open to take in CO2 and release O2.", importance: "Balances gas exchange against water loss." }
+          ],
+          visual_breakdown: [
+            { id: "inputs", title: "1. Raw Inputs Gather", summary: "Roots absorb water (H2O), stomata inhale carbon dioxide (CO2), and leaves capture sunlight.", connection_to_next: "Light strikes chlorophyll", icon_type: "input", metric_label: "6 CO2 + 6 H2O" },
+            { id: "light", title: "2. Light Reactions Charge Batteries", summary: "Chlorophyll excites electrons, splits water, releases oxygen, and produces ATP + NADPH.", connection_to_next: "Sends ATP & NADPH to stroma", icon_type: "process", metric_label: "Thylakoids" },
+            { id: "calvin", title: "3. Calvin Cycle Builds Sugar", summary: "Enzymes bind CO2 and use ATP + NADPH to assemble glucose molecules.", connection_to_next: "Exports sugar & recycles carriers", icon_type: "loop", metric_label: "Stroma" },
+            { id: "outputs", title: "4. Fuel & Oxygen Released", summary: "Glucose powers plant growth while oxygen exits through stomata into the atmosphere.", connection_to_next: "Sustains ecosystems", icon_type: "output", metric_label: "C6H12O6 + 6 O2" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Sunlight + Water (H2O) + CO2\"] --> B[\"Chlorophyll in Thylakoids\"]\n  B --> C[\"Light-Dependent Reactions: Split Water\"]\n  C --> D[\"Release Oxygen (O2) via Stomata\"]\n  C --> E[\"Charge ATP & NADPH Batteries\"]\n  E --> F[\"Calvin Cycle in Stroma + CO2\"]\n  F --> G[\"Synthesize Glucose (C6H12O6)\"]\n  F --> H[\"Recycle ADP & NADP+ Back to Thylakoids\"]\n  H --> C\n  G --> I[\"Plant Growth & Stored Starch\"]",
+          action_steps: [
+            { step_number: 1, title: "Memorize the Master Equation", description: "Anchor your recall around 6 CO2 + 6 H2O + Light -> C6H12O6 + 6 O2.", timeframe: "5 mins", outcome: "Immediate clarity on inputs and outputs." },
+            { step_number: 2, title: "Separate 'Charging' from 'Building'", description: "Picture Light Reactions as charging batteries (ATP/NADPH) and the Calvin Cycle as building sugar with them.", timeframe: "10 mins", outcome: "Eliminates confusion between the two stages." },
+            { step_number: 3, title: "Map Chloroplast Locations", description: "Sketch a chloroplast from memory: Thylakoids = Light Reactions; Stroma = Calvin Cycle.", timeframe: "10 mins", outcome: "Strong spatial recall for exams." },
+            { step_number: 4, title: "Test Limiting Factors", description: "Ask what slows the rate if sunlight drops, temperature spikes, or stomata close during drought.", timeframe: "10 mins", outcome: "Connects biology to agriculture and climate." }
+          ],
+          key_takeaways: [
+            "Photosynthesis runs in two connected stages: energy capture (Light Reactions) and carbon building (Calvin Cycle).",
+            "Released oxygen comes from splitting water molecules, not from CO2.",
+            "ATP and NADPH act like rechargeable batteries cycling between thylakoids and stroma.",
+            "Almost every food chain on Earth depends on glucose built through photosynthesis."
+          ],
+          examples: [
+            { title: "Sunny Windowsill vs. Shaded Shelf", scenario: "A basil plant on a dark shelf grows pale and weak while one in sunlight thrives.", application: "Fewer photons slow the Light Reactions, starving the Calvin Cycle of ATP so the plant cannot synthesize enough glucose." },
+            { title: "Desert Cacti Conserving Water", scenario: "Opening pores at midday in a desert would dehydrate a cactus.", application: "CAM plants open stomata at night to store CO2, then run the Calvin Cycle behind closed pores during daylight." }
+          ]
+        }
+      },
+      {
+        slug: "multiple-deadlines",
+        query: "I have multiple deadlines and don't know how to organise my work.",
+        shortDescription: "Triage competing tasks with an Urgency-Impact matrix, time-blocked sprints, and realistic buffer rules.",
+        solution: {
+          title: "Taming Multiple Deadlines: A Visual Triage & Execution System",
+          category: "Everyday Problems",
+          problem_summary: "Having multiple deadlines creates cognitive overload when every task feels equally urgent. The fix is externalizing all tasks, ranking them by consequence and time sensitivity, and executing in protected focus blocks.",
+          explanation: "Deadline panic happens when your brain tries to hold ten unranked tasks in working memory at once. Everything blurs into one undifferentiated emergency, causing procrastination or shallow multitasking.\n\nInstead of working harder, apply a three-step triage funnel: Capture, Score, and Time-Block. First, empty every deliverable onto one single list with real due dates and estimated hours. Next, sort tasks into four quadrants using Impact vs. Urgency so high-consequence deadlines get immediate morning energy.\n\nFinally, break large deliverables into 45-to-90-minute concrete milestones on your calendar—and proactively renegotiate anything whose math genuinely does not fit.",
+          key_concepts: [
+            { name: "Eisenhower Triage Matrix", definition: "Sorts tasks into Urgent+Important (Do First), Important+Not Urgent (Schedule), Urgent+Low Impact (Batch/Delegate), and Noise (Drop).", importance: "Stops busywork from stealing time from critical deadlines." },
+            { name: "Work-in-Progress (WIP) Limit", definition: "Capping active work to 1-2 tasks per block instead of hopping across five tabs.", importance: "Eliminates context-switching penalties." },
+            { name: "Minimum Viable Deliverable", definition: "Defining 'complete and acceptable' before spending hours polishing edge details.", importance: "Guarantees on-time delivery." },
+            { name: "20% Buffer & Early Renegotiation", definition: "Leaving slack for surprises and communicating early when hours exceed capacity.", importance: "Prevents cascading deadline failures." }
+          ],
+          visual_breakdown: [
+            { id: "capture", title: "1. Brain Dump & Time Audit", summary: "List every deadline, exact due date, and realistic hours required in one place.", connection_to_next: "Compare hours vs. capacity", icon_type: "input", metric_label: "15 mins" },
+            { id: "triage", title: "2. Priority Decision Gate", summary: "Score each task by consequence of delay and unblock dependencies first.", connection_to_next: "Lock Top 2 Priorities", icon_type: "decision", metric_label: "4 Quadrants" },
+            { id: "block", title: "3. Calendar Time-Blocking", summary: "Assign 60-90 minute deep-work sprints with 20% slack buffer.", connection_to_next: "Single-task execution", icon_type: "process", metric_label: "Deep Focus" },
+            { id: "ship", title: "4. Ship & Daily Reset", summary: "Close each day with a 5-minute sync to adjust tomorrow's blocks.", connection_to_next: "Calm momentum", icon_type: "output", metric_label: "Daily Sync" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"List All Deadlines + True Hour Estimates\"] --> B{\"Total Hours <= Available Hours?\"}\n  B -- \"No\" --> C[\"Renegotiate Scope / Request Extension / Cut Noise\"]\n  C --> D[\"Score Tasks: Impact vs. Urgency\"]\n  B -- \"Yes\" --> D\n  D --> E{\"High Impact & Due Soon?\"}\n  E -- \"Yes\" --> F[\"Schedule Morning Peak-Energy Block\"]\n  E -- \"No\" --> G{\"Important, Due Later?\"}\n  G -- \"Yes\" --> H[\"Break into 60-Min Calendar Milestones\"]\n  G -- \"No\" --> I[\"Batch, Delegate, or Defer\"]\n  F --> J[\"Single-Task Sprint (No Notifications)\"]\n  H --> J\n  J --> K[\"5-Min End-of-Day Progress Check\"]",
+          action_steps: [
+            { step_number: 1, title: "Run a 10-Minute Master Inventory", description: "Write every pending task with Due Date, Consequence if Late, and Estimated Hours.", timeframe: "Today, 10 mins", outcome: "Removes mental fog and reveals true workload." },
+            { step_number: 2, title: "Lock Today's Top 2", description: "Choose the two deliverables that cut the highest risk or unblock others; freeze everything else until noon.", timeframe: "Today, 5 mins", outcome: "Immediate clarity on where to start." },
+            { step_number: 3, title: "Flag Collisions 48+ Hours Early", description: "If math shows an overlap, message your manager, client, or teacher early proposing a realistic alternative.", timeframe: "Today, 15 mins", outcome: "Turns panic into trust and flexibility." },
+            { step_number: 4, title: "Execute 50/10 Focus Sprints", description: "Silence phone, work 50 minutes on one deliverable, take a 10-minute reset.", timeframe: "Daily", outcome: "Steady daily completion without burnout." }
+          ],
+          key_takeaways: [
+            "Anxiety thrives on unranked ambiguity; a 10-minute written triage cuts stress immediately.",
+            "Never schedule 100% of your hours—protect a 20% buffer for unexpected friction.",
+            "Single-tasking in calendar blocks outperforms reactive multitasking every time.",
+            "Early, honest communication buys room before a tight deadline becomes a crisis."
+          ],
+          examples: [
+            { title: "Three Colliding University Deadlines", scenario: "A student faces a Wednesday lab report (15% grade), Friday group deck (30%), and Thursday quiz (5%).", application: "They block Tuesday morning for the lab draft, Tuesday afternoon for group slides so teammates aren't blocked, and spend 45 minutes Wednesday evening on the minor quiz." },
+            { title: "Client Launch + Admin Audit", scenario: "A freelancer has a client go-live and quarterly bookkeeping in the same week.", application: "They ship the client's core launch checklist Mon-Wed, batch receipts Thursday afternoon, and defer cosmetic tweaks to next week." }
+          ]
+        }
+      },
+      {
+        slug: "online-business",
+        query: "I want to start a small online business. Where should I begin?",
+        shortDescription: "Validate a real problem, launch a lean offer before building heavy infrastructure, and win your first 10 customers.",
+        solution: {
+          title: "Launching a Small Online Business: The Lean Validation Roadmap",
+          category: "Business",
+          problem_summary: "Most first-time founders stall by spending months perfecting logos and websites before confirming anyone will pay. Begin by picking one specific problem for one audience, validating demand with a simple offer, and iterating from real customer feedback.",
+          explanation: "Starting an online business does not require complex code, massive ad budgets, or a 50-page business plan. Think of your launch as an experiment answering one question first: 'Will real people pay money to solve this specific problem?'\n\nStart narrow. Choose an audience you already understand and a painful or valuable problem you can solve via a service, digital product, or curated niche store. Talk to 5-10 target buyers before building anything heavy.\n\nOnce demand is clear, launch a Minimum Viable Offer—a single landing page, payment link, and manual delivery—to win your first 5 to 10 paying customers before automating or scaling.",
+          key_concepts: [
+            { name: "Problem-Audience Fit", definition: "Pairing a specific customer group with an urgent problem they actively try to solve.", importance: "Focused offers convert far better than vague 'for everyone' ideas." },
+            { name: "Minimum Viable Offer (MVO)", definition: "The simplest paid version of your solution someone can buy this week.", importance: "Tests willingness to pay in days instead of months." },
+            { name: "Unit Economics", definition: "Customer acquisition + fulfillment cost versus price and margin.", importance: "Ensures growth adds profit rather than magnifying losses." },
+            { name: "Distribution Channel", definition: "The repeatable place buyers discover you (communities, search, content, outbound, partnerships).", importance: "Products fail silently without a path to reach customers." }
+          ],
+          visual_breakdown: [
+            { id: "niche", title: "1. Pick Audience & Pain Point", summary: "Choose a focused group already spending money to save time, earn more, or solve friction.", connection_to_next: "Interview 5-10 target buyers", icon_type: "input", metric_label: "Week 1" },
+            { id: "validate", title: "2. Validate Before Building", summary: "Share your core promise directly with prospects and listen to real objections.", connection_to_next: "Refine offer & price", icon_type: "decision", metric_label: "5-10 Calls" },
+            { id: "mvo", title: "3. Ship Minimum Viable Offer", summary: "Publish a clean 1-page offer with checkout link and fulfill manually at first.", connection_to_next: "Win first 5 customers", icon_type: "process", metric_label: "Week 2-3" },
+            { id: "iterate", title: "4. Deliver, Capture Proof & Scale", summary: "Collect testimonials, fix friction, set up finances/legal basics, and scale your best channel.", connection_to_next: "Repeatable revenue", icon_type: "output", metric_label: "Week 4+" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Define Specific Niche & Painful Problem\"] --> B[\"Talk to 5-10 Target Customers\"]\n  B --> C{\"Do They Actively Want This Solved?\"}\n  C -- \"No\" --> D[\"Adjust Problem Angle or Audience\"]\n  D --> B\n  C -- \"Yes\" --> E[\"Build 1-Page Minimum Viable Offer + Checkout\"]\n  E --> F[\"Direct Outreach & Content to First 50 Prospects\"]\n  F --> G{\"First 3-5 Paid Sales?\"}\n  G -- \"No\" --> H[\"Refine Messaging, Price, or Guarantee\"]\n  H --> F\n  G -- \"Yes\" --> I[\"Deliver Great Results & Gather Testimonials\"]\n  I --> J[\"Formalize Operations & Scale Repeatable Channel\"]",
+          action_steps: [
+            { step_number: 1, title: "Write a 1-Sentence Offer Hypothesis", description: "Complete: 'I help [specific audience] get [concrete outcome] without [frustration] using [offer].'", timeframe: "Day 1-2", outcome: "Sharp positioning ready to test." },
+            { step_number: 2, title: "Run 5 Discovery Conversations", description: "Ask prospects how they solve the problem today and what it currently costs them.", timeframe: "Week 1", outcome: "Verified demand in customers' own words." },
+            { step_number: 3, title: "Launch a 1-Page Checkout", description: "Use a lightweight tool (Carrd, Gumroad, Shopify, or Stripe/Razorpay link) stating outcome, price, and CTA.", timeframe: "Week 2", outcome: "Live storefront ready for real revenue." },
+            { step_number: 4, title: "Close & Delight Pilot Buyers", description: "Offer founding pricing for your first 5 buyers, over-deliver, and publish their case studies.", timeframe: "Week 3-4", outcome: "Validated offer, cash flow, and social proof." }
+          ],
+          key_takeaways: [
+            "Validate willingness to pay before writing complex code or buying bulk inventory.",
+            "Services and digital templates carry the lowest upfront risk for bootstrapping.",
+            "Your first 5 customers teach you more than 50 hours of theory.",
+            "Keep fixed monthly overhead near zero until revenue comfortably covers it."
+          ],
+          examples: [
+            { title: "Niche Freelancer Ops Templates", scenario: "A project coordinator spots freelance designers struggling with client tracking.", application: "Instead of coding a SaaS app, they package a clean client-portal template, post a 2-minute demo in design communities, and sell 12 copies at $29." },
+            { title: "Curated Specialty Decaf Subscription", scenario: "A coffee fan wants to launch an e-commerce brand.", application: "They partner with a local roaster for small-batch drop-shipping and validate 25 recurring buyers on a 1-page site before custom packaging." }
+          ]
+        }
+      },
+      {
+        slug: "artificial-intelligence",
+        query: "Explain artificial intelligence simply.",
+        shortDescription: "Understand how machines learn patterns from examples instead of rigid rules, from data to predictions.",
+        solution: {
+          title: "Artificial Intelligence Explained Simply: Pattern Recognition at Scale",
+          category: "Technology",
+          problem_summary: "Artificial Intelligence (AI) is software that learns patterns from large datasets to predict, classify, or generate new content—without programmers hand-coding every single rule.",
+          explanation: "Traditional software follows a strict recipe: programmers write exact 'if-this-then-that' rules. That works great for calculators, but fails for messy tasks like recognizing faces or understanding everyday speech.\n\nMachine Learning flips the approach. Engineers feed a mathematical model thousands or billions of examples. The model guesses, checks how wrong it was, and nudges millions of internal weights to improve.\n\nModern Generative AI (like Large Language Models) predicts the next most likely token or pixel at massive scale, enabling summarization, coding assistance, and visual problem-solving.",
+          key_concepts: [
+            { name: "Training Data", definition: "Curated text, images, or records a model studies to learn patterns.", importance: "Data quality determines output reliability and bias." },
+            { name: "Neural Weights", definition: "Adjustable numeric dials connecting layers of math nodes.", importance: "Weights store what the AI learned during training." },
+            { name: "Inference", definition: "Running a trained model on a brand-new prompt to generate an answer.", importance: "Happens in milliseconds when you use an AI app." },
+            { name: "Verification & Guardrails", definition: "Checking outputs because models predict plausible patterns rather than consulting an absolute truth engine.", importance: "Essential for high-stakes accuracy." }
+          ],
+          visual_breakdown: [
+            { id: "data", title: "1. Examples & Tokens", summary: "Text, images, or numbers are cleaned and converted into numerical tokens.", connection_to_next: "Fed into training loop", icon_type: "input", metric_label: "Tokens" },
+            { id: "train", title: "2. Training Tunes Weights", summary: "Model guesses, measures error, and updates weights over many cycles.", connection_to_next: "Produces trained model", icon_type: "loop", metric_label: "Backprop" },
+            { id: "infer", title: "3. Prompt Runs Inference", summary: "Your prompt flows through layers to compute likely answers.", connection_to_next: "Formats output", icon_type: "process", metric_label: "Milliseconds" },
+            { id: "verify", title: "4. Output & Human Review", summary: "Result is structured and checked by humans or schema rules.", connection_to_next: "Safe application", icon_type: "output", metric_label: "Verified" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Dataset of Examples\"] --> B[\"Convert Inputs to Tokens\"]\n  B --> C[\"Neural Network Guesses Output\"]\n  C --> D[\"Measure Error vs. Target\"]\n  D --> E{\"Error Low Enough?\"}\n  E -- \"No\" --> F[\"Adjust Internal Weights\"]\n  F --> C\n  E -- \"Yes\" --> G[\"Trained Model Ready\"]\n  G --> H[\"New User Prompt (Inference)\"]\n  H --> I[\"Generated Answer / Visual\"]",
+          action_steps: [
+            { step_number: 1, title: "Spot Rules vs. Learning", description: "Compare rule-based tools (spreadsheets) with pattern-learning tools (spam filters, LLMs).", timeframe: "5 mins", outcome: "Clear intuition for what AI actually does." },
+            { step_number: 2, title: "Use Structured Prompts", description: "Provide role, goal, constraints, and format rather than vague one-liners.", timeframe: "15 mins", outcome: "Sharper, immediately usable outputs." },
+            { step_number: 3, title: "Verify Critical Facts", description: "Cross-check dates, numbers, legal, or health claims against primary sources.", timeframe: "Ongoing", outcome: "Confident, responsible AI use." }
+          ],
+          key_takeaways: [
+            "AI learns statistical patterns from examples instead of rigid human-written rules.",
+            "Training happens upfront; inference answers your prompts live.",
+            "Pairing AI generation with structured schemas and human verification gives the best results."
+          ],
+          examples: [
+            { title: "Inbox Spam Filtering", scenario: "Your email automatically catches clever phishing messages.", application: "The model detects subtle combinations of phrasing and sender signals learned from millions of past emails." }
+          ]
+        }
+      },
+      {
+        slug: "study-habits",
+        query: "How can I develop better study habits?",
+        shortDescription: "Replace passive rereading with active recall, spaced repetition, and friction-free study cues.",
+        solution: {
+          title: "High-Retention Study Habits: Learn Faster and Remember Longer",
+          category: "Personal Development",
+          problem_summary: "Most students spend hours rereading highlights—creating an illusion of fluency without real recall. Better study habits pair low-friction routines with active recall and spaced review.",
+          explanation: "Highlighting and rereading feel easy because recognizing words feels like knowing them. Cognitive science proves durable memory forms when your brain works slightly hard to retrieve answers without looking.\n\nPair two changes: design an effortless daily trigger (same desk, phone in another room, 30-minute timer) and swap passive reading for Active Recall—closing the book to quiz yourself—followed by spaced reviews on Days 1, 3, 7, and 21.",
+          key_concepts: [
+            { name: "Active Recall", definition: "Testing yourself from a blank page instead of staring at open notes.", importance: "Strengthens memory retrieval 2-3x better than rereading." },
+            { name: "Spaced Repetition", definition: "Reviewing material at expanding intervals (Day 1, 3, 7, 21).", importance: "Flattens the forgetting curve without last-minute cramming." },
+            { name: "Friction-Free Cue", definition: "Linking study to a consistent time/place with distractions removed.", importance: "Starts sessions automatically without willpower fatigue." }
+          ],
+          visual_breakdown: [
+            { id: "cue", title: "1. Trigger & Clean Desk", summary: "Fixed time, phone out of reach, single specific session goal.", connection_to_next: "Start focus sprint", icon_type: "input", metric_label: "2 min setup" },
+            { id: "encode", title: "2. Grasp Core Logic", summary: "Read for cause-and-effect for 15 minutes rather than copying lines.", connection_to_next: "Close notes", icon_type: "process", metric_label: "15 mins" },
+            { id: "recall", title: "3. Blank-Page Recall", summary: "Write or explain everything from memory, then check missing gaps.", connection_to_next: "Schedule spaced reviews", icon_type: "decision", metric_label: "Active Recall" },
+            { id: "space", title: "4. 1-3-7-21 Review Loop", summary: "Re-test weak areas on Days 3, 7, and 21 until recall is effortless.", connection_to_next: "Exam readiness", icon_type: "loop", metric_label: "Spaced" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Daily Cue + Phone Out of Room\"] --> B[\"Pick 1 Specific Study Target\"]\n  B --> C[\"Understand Core Idea (15-20 Mins)\"]\n  C --> D[\"Close Book: Blank-Page Recall / Quiz\"]\n  D --> E{\"Recalled >= 80%?\"}\n  E -- \"No\" --> F[\"Review Missed Gaps & Explain Simply\"]\n  F --> D\n  E -- \"Yes\" --> G[\"Schedule Next Review: +3d, +7d, +21d\"]",
+          action_steps: [
+            { step_number: 1, title: "Pick an Anchor 30-Minute Window", description: "Attach studying to a daily event like finishing breakfast or afternoon tea.", timeframe: "Today", outcome: "Removes daily negotiation." },
+            { step_number: 2, title: "Turn Notes into Questions", description: "Write quiz prompts in your margins instead of passive bullet summaries.", timeframe: "Every session", outcome: "Built-in self-testing." },
+            { step_number: 3, title: "Use the Feynman Check", description: "Explain the topic aloud simply; spot any place where you hesitate.", timeframe: "10 mins", outcome: "Finds hidden gaps immediately." },
+            { step_number: 4, title: "Log 1-3-7-21 Review Dates", description: "Write next review dates on top of each topic sheet.", timeframe: "Weekly", outcome: "Calm recall on exam day." }
+          ],
+          key_takeaways: [
+            "Rereading creates familiarity, not recall under exam pressure.",
+            "Short daily spaced sessions beat marathon weekend cramming.",
+            "Designing your study environment beats relying on willpower."
+          ],
+          examples: [
+            { title: "Two-Week Biology Exam Prep", scenario: "A student has four chapters to master.", application: "They sketch diagrams from memory after each section and quiz themselves every 3 days instead of recopying notes." }
+          ]
+        }
+      },
+      {
+        slug: "scientific-method",
+        query: "How does the scientific method turn a hunch into evidence?",
+        shortDescription: "Follow how observation, falsifiable hypotheses, controlled testing, and peer review build reliable knowledge.",
+        solution: {
+          title: "The Scientific Method: Turning Curiosity into Reliable Evidence",
+          category: "Science",
+          problem_summary: "The scientific method is a disciplined loop for testing ideas against reality while minimizing human bias, turning observations into repeatable evidence.",
+          explanation: "Humans naturally spot patterns even in random noise. The scientific method protects us from fooling ourselves.\n\nIt starts with observation and a falsifiable hypothesis—stating clearly what result would prove you wrong. You change one variable against an untouched control group, measure objectively, and invite independent replication.",
+          key_concepts: [
+            { name: "Falsifiable Hypothesis", definition: "A prediction stated clearly enough that an experiment can disprove it.", importance: "Untestable claims cannot build scientific knowledge." },
+            { name: "Control Group", definition: "An identical baseline group that does not receive the experimental change.", importance: "Isolates true cause and effect." },
+            { name: "Replication", definition: "Independent researchers repeating the test and confirming results.", importance: "Filters out chance flukes and bias." }
+          ],
+          visual_breakdown: [
+            { id: "obs", title: "1. Observe & Question", summary: "Spot a pattern and frame a measurable question.", connection_to_next: "Form prediction", icon_type: "input" },
+            { id: "hyp", title: "2. Falsifiable Hypothesis", summary: "Define if-then prediction and what would disprove it.", connection_to_next: "Design test", icon_type: "decision" },
+            { id: "exp", title: "3. Controlled Experiment", summary: "Test 1 variable against a clean control baseline.", connection_to_next: "Analyze data", icon_type: "process" },
+            { id: "rep", title: "4. Analyze & Replicate", summary: "Evaluate evidence honestly and invite independent checks.", connection_to_next: "Refine theory", icon_type: "loop" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Observation & Question\"] --> B[\"Form Falsifiable Hypothesis\"]\n  B --> C[\"Run Controlled Experiment (1 Variable)\"]\n  C --> D[\"Analyze Measured Data\"]\n  D --> E{\"Data Supports Hypothesis?\"}\n  E -- \"No\" --> F[\"Revise Hypothesis from Evidence\"]\n  F --> C\n  E -- \"Yes\" --> G[\"Independent Replication & Review\"]",
+          action_steps: [
+            { step_number: 1, title: "Define What Disproves You", description: "Before testing any idea, write down what evidence would prove it wrong.", timeframe: "5 mins", outcome: "Prevents confirmation bias." },
+            { step_number: 2, title: "Keep a Control Baseline", description: "Compare changes against an unchanged baseline under identical conditions.", timeframe: "During test", outcome: "Clean evidence." },
+            { step_number: 3, title: "Record Data Faithfully", description: "Log measurements before interpreting them.", timeframe: "Ongoing", outcome: "Trustworthy conclusions." }
+          ],
+          key_takeaways: [
+            "Science advances fastest by testing how ideas could fail.",
+            "Changing only one variable at a time isolates real causes.",
+            "Repeatable evidence outweighs isolated anecdotes."
+          ],
+          examples: [
+            { title: "Testing Plant Fertilizer", scenario: "Checking whether liquid seaweed speeds tomato growth.", application: "Grow 10 identical plants, feed seaweed to 5 random pots, keep 5 as control, and compare heights after 4 weeks." }
+          ]
+        }
+      },
+      {
+        slug: "creative-block",
+        query: "How do I overcome creative block and finish a project?",
+        shortDescription: "Separate messy exploration from critical editing using constraints, micro-drafts, and divergent-convergent loops.",
+        solution: {
+          title: "Breaking Creative Block: From Blank Page to Finished Work",
+          category: "Creativity",
+          problem_summary: "Creative block happens when your inner critic tries to edit while your brain is still trying to invent. Separating generation from judgment restores momentum.",
+          explanation: "Perfectionism freezes beginners on stroke one. Split your work into two modes: Divergent Exploration (15-minute messy creation with zero editing) and Convergent Editing (selecting and polishing the strongest 20% later).\n\nAdd small constraints—like a short timer or limited palette—and permission for an ugly first draft, because you can always edit an imperfect page, never a blank one.",
+          key_concepts: [
+            { name: "Divergent vs. Convergent Modes", definition: "Generate raw options freely first; critique and refine in a separate session.", importance: "Running both simultaneously causes paralysis." },
+            { name: "Enabling Constraints", definition: "Deliberate boundaries (timebox, format, word limit) that shrink overwhelming choices.", importance: "Focuses imagination into playful problem-solving." },
+            { name: "Ugly First Draft", definition: "Explicit permission to create rough clay before sculpting.", importance: "Builds immediate momentum." }
+          ],
+          visual_breakdown: [
+            { id: "con", title: "1. Set a Small Constraint", summary: "Pick a 15-minute timer and low-stakes target.", connection_to_next: "Silence inner critic", icon_type: "input" },
+            { id: "div", title: "2. Diverge Freely", summary: "Produce raw ideas quickly without deleting or judging.", connection_to_next: "Take a short break", icon_type: "process" },
+            { id: "conv", title: "3. Select Best 20%", summary: "Review fresh, keep strongest pieces, build outline.", connection_to_next: "Polish & finish", icon_type: "decision" },
+            { id: "pub", title: "4. Ship & Learn", summary: "Finish cleanly instead of endlessly tweaking.", connection_to_next: "Builds confidence", icon_type: "output" }
+          ],
+          flowchart_mermaid: "flowchart TD\n  A[\"Blank Page Paralysis\"] --> B[\"Set 15-Min Timer + Tiny Constraint\"]\n  B --> C[\"Divergent Sprint: Raw Output (No Editing)\"]\n  C --> D[\"10-Min Walk / Reset\"]\n  D --> E[\"Convergent Pass: Circle Best 20%\"]\n  E --> F{\"Structure Working?\"}\n  F -- \"No\" --> G[\"Remix Best Pieces into Fresh Outline\"]\n  G --> C\n  F -- \"Yes\" --> H[\"Polish & Publish Finished Project\"]",
+          action_steps: [
+            { step_number: 1, title: "Lower the Bar for 15 Minutes", description: "Fill a page with unfiltered rough ideas—no backspacing.", timeframe: "15 mins", outcome: "Breaks blank-page fear." },
+            { step_number: 2, title: "Switch Medium Briefly", description: "Use paper, sticky notes, or voice memos if the screen feels stale.", timeframe: "10 mins", outcome: "Sparks fresh angles." },
+            { step_number: 3, title: "Edit Separately Later", description: "Return as an editor to cut clutter and hit your finish line.", timeframe: "45 mins", outcome: "Completed work." }
+          ],
+          key_takeaways: [
+            "Never invent and critique in the same 15-minute block.",
+            "Constraints unlock creativity faster than blank freedom.",
+            "Action generates inspiration more reliably than waiting for it."
+          ],
+          examples: [
+            { title: "Designer Unblocking a Logo", scenario: "Stuck nudging one digital curve for two hours.", application: "Sketches 20 tiny marker thumbnails in 10 minutes on paper and immediately finds two strong concepts." }
+          ]
+        }
+      }
+    ];
+
+    // =========================================================================
+    // 2. APPLICATION STATE & HELPERS
+    // =========================================================================
+    const state = {
+      route: "home",
+      activeQuery: "",
+      activeSolution: null,
+      activeMeta: null,
+      activeTab: "overview",
+      mermaidZoom: 1,
+      showMermaidCode: false,
+      exploreCategory: "All",
+      exploreSearch: "",
+      isLoading: false,
+      isBusy: false,
+      error: null
+    };
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 2400);
+    }
+
+    function getApiKey() {
+      return (localStorage.getItem(STORAGE_API_KEY) || "").trim();
+    }
+
+    function getModelName() {
+      return localStorage.getItem(STORAGE_MODEL_KEY) || "gemini-3.8-flash";
+    }
+
+    function updateApiBadge() {
+      const btn = document.getElementById("apiStatusBtn");
+      if (getApiKey()) {
+        btn.textContent = "Live Gemini Active";
+        btn.className = "rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100";
+      } else {
+        btn.textContent = "Demo Mode · API Key";
+        btn.className = "rounded-xl border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-semibold text-indigo-950 transition hover:bg-violet-100";
+      }
+    }
+
+    function openApiModal() {
+      document.getElementById("geminiKeyInput").value = getApiKey();
+      document.getElementById("geminiModelInput").value = getModelName();
+      const modal = document.getElementById("apiModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeApiModal() {
+      const modal = document.getElementById("apiModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function saveApiSettings() {
+      const key = document.getElementById("geminiKeyInput").value.trim();
+      const model = document.getElementById("geminiModelInput").value;
+      if (key) {
+        localStorage.setItem(STORAGE_API_KEY, key);
+        showToast("Gemini API key saved in browser.");
+      } else {
+        localStorage.removeItem(STORAGE_API_KEY);
+        showToast("Demo Mode active.");
+      }
+      localStorage.setItem(STORAGE_MODEL_KEY, model);
+      updateApiBadge();
+      closeApiModal();
+    }
+
+    function clearApiKey() {
+      localStorage.removeItem(STORAGE_API_KEY);
+      document.getElementById("geminiKeyInput").value = "";
+      updateApiBadge();
+      closeApiModal();
+      showToast("Switched to Demo Mode.");
+    }
+
+    function toggleMobileMenu(force) {
+      const menu = document.getElementById("mobileMenu");
+      if (typeof force === "boolean") {
+        menu.classList.toggle("hidden", !force);
+      } else {
+        menu.classList.toggle("hidden");
+      }
+    }
+
+    // =========================================================================
+    // 3. LOCAL STORAGE: SAVED SOLUTIONS & ROADMAP PROGRESS
+    // =========================================================================
+    function getSavedRipples() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_SAVED_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCurrentSolution() {
+      if (!state.activeSolution) return;
+      const list = getSavedRipples().filter(
+        (x) => x.solution.title.toLowerCase() !== state.activeSolution.title.toLowerCase()
+      );
+      list.unshift({
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+        query: state.activeQuery || state.activeSolution.title,
+        savedAt: new Date().toISOString(),
+        solution: state.activeSolution,
+        meta: state.activeMeta
+      });
+      localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(list.slice(0, 50)));
+      showToast("Saved to your browser!");
+      render();
+    }
+
+    function deleteSavedItem(id) {
+      const next = getSavedRipples().filter((x) => x.id !== id);
+      localStorage.setItem(STORAGE_SAVED_KEY, JSON.stringify(next));
+      showToast("Deleted saved solution.");
+      render();
+    }
+
+    function clearAllSavedItems() {
+      localStorage.removeItem(STORAGE_SAVED_KEY);
+      showToast("Cleared all saved solutions.");
+      render();
+    }
+
+    function isSolutionSaved(title) {
+      return getSavedRipples().some((x) => x.solution.title.toLowerCase() === title.toLowerCase());
+    }
+
+    function getStepProgress(title) {
+      try {
+        const map = JSON.parse(localStorage.getItem(STORAGE_PROGRESS_KEY) || "{}");
+        return Array.isArray(map[title]) ? map[title] : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function toggleStep(title, stepNumber) {
+      try {
+        const map = JSON.parse(localStorage.getItem(STORAGE_PROGRESS_KEY) || "{}");
+        const cur = Array.isArray(map[title]) ? map[title] : [];
+        map[title] = cur.includes(stepNumber)
+          ? cur.filter((n) => n !== stepNumber)
+          : [...cur, stepNumber];
+        localStorage.setItem(STORAGE_PROGRESS_KEY, JSON.stringify(map));
+      } catch {}
+      render();
+    }
+
+    // =========================================================================
+    // 4. MERMAID SANITIZER & FALLBACK BUILDER
+    // =========================================================================
+    function sanitizeMermaidCode(raw) {
+      let code = String(raw || "")
+        .replace(/```mermaid\s*/gi, "")
+        .replace(/```\s*/g, "")
+        .trim();
+
+      if (!code) {
+        return 'flowchart TD\n  A["Start"] --> B["Understand Core"] --> C["Take Action"]';
+      }
+      const firstLine = code.split(/\r?\n/)[0]?.trim() || "";
+      if (!/^(flowchart|graph|sequenceDiagram|mindmap|timeline)\b/i.test(firstLine)) {
+        code = "flowchart TD\n" + code;
+      }
+      return code
+        .split(/\r?\n/)
+        .map((l) => l.trim().replace(/[“”]/g, '"').replace(/[‘’]/g, "'"))
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function buildFallbackMermaid(stages, title) {
+      if (!stages || !stages.length) {
+        return `flowchart TD\n  A["${String(title || "Topic").replace(/"/g, "'")}"] --> B["Analyze"] --> C["Apply"]`;
+      }
+      const lines = ["flowchart TD"];
+      stages.forEach((s, i) => {
+        const id = "S" + (i + 1);
+        const lbl = String(s.title).replace(/"/g, "'").replace(/[<>]/g, "");
+        lines.push(s.icon_type === "decision" ? `  ${id}{"${lbl}"}` : `  ${id}["${lbl}"]`);
+        if (i > 0) {
+          const edge = String(stages[i - 1].connection_to_next || "next")
+            .replace(/"/g, "'")
+            .slice(0, 32);
+          lines.push(`  S${i} -->|"${edge}"| ${id}`);
+        }
+      });
+      return lines.join("\n");
+    }
+
+    // =========================================================================
+    // 5. DEMO ENGINE + LIVE GOOGLE GEMINI REST API GENERATOR
+    // =========================================================================
+    function findPresetForQuery(query) {
+      const q = query.toLowerCase().trim();
+      for (const p of PRESET_SOLUTIONS) {
+        if (p.query.toLowerCase() === q) return p;
+      }
+      if (/photosynthesis|chloroplast|calvin cycle/.test(q)) return PRESET_SOLUTIONS[0];
+      if (/deadline|organise my work|organize my work|procrastinat|too many tasks/.test(q)) return PRESET_SOLUTIONS[1];
+      if (/online business|start a business|side hustle|ecommerce/.test(q)) return PRESET_SOLUTIONS[2];
+      if (/artificial intelligence|explain ai|how does ai work/.test(q)) return PRESET_SOLUTIONS[3];
+      if (/study habit|study better|exam prep/.test(q)) return PRESET_SOLUTIONS[4];
+      if (/scientific method|hypothesis/.test(q)) return PRESET_SOLUTIONS[5];
+      if (/creative block|writer's block/.test(q)) return PRESET_SOLUTIONS[6];
+      return null;
+    }
+
+    function inferCategory(prompt, hint) {
+      if (hint) return hint;
+      const p = prompt.toLowerCase();
+      if (/business|startup|market|sales|revenue|brand|customer/.test(p)) return "Business";
+      if (/code|software|ai|machine learning|api|cloud|data|algorithm/.test(p)) return "Technology";
+      if (/physics|chemistry|biology|dna|climate|gravity|energy|cell/.test(p)) return "Science";
+      if (/exam|school|learn|explain|history|math|study/.test(p)) return "Education";
+      if (/write|design|music|art|story|paint|creative/.test(p)) return "Creativity";
+      if (/habit|focus|routine|confidence|career|mindset|sleep/.test(p)) return "Personal Development";
+      return "Everyday Problems";
+    }
+
+    function buildDemoSolution(prompt, categoryHint, mode, currentSolution) {
+      let base;
+      if (mode !== "initial" && mode !== "regenerate" && currentSolution) {
+        base = JSON.parse(JSON.stringify(currentSolution));
+      } else {
+        const preset = findPresetForQuery(prompt);
+        if (preset) {
+          base = JSON.parse(JSON.stringify(preset.solution));
+        } else {
+          const clean = prompt.trim().replace(/[?.!]+$/, "");
+          const cat = inferCategory(prompt, categoryHint);
+          base = {
+            title: "Visual Guide: " + clean.slice(0, 72),
+            category: cat,
+            problem_summary: `Demo Mode structured breakdown for "${clean}". Add a Gemini API key in the top bar for live custom AI generation.`,
+            explanation: `In Demo Mode (no Gemini API key set), Ripple still organizes "${clean}" into a clear visual system.\n\nComplex challenges become manageable when split into four visible stages: framing the core goal, identifying key constraints, picking the highest-leverage path, and validating with one concrete step.\n\nConnect a Gemini API key anytime via "Demo Mode · API Key" in the header for deep live synthesis tailored to every detail of your prompt.`,
+            key_concepts: [
+              { name: "Root Mechanism", definition: `Understand what truly drives "${clean}" before applying surface fixes.`, importance: "Targets leverage instead of symptoms." },
+              { name: "Constraints & Inputs", definition: "Clarify available time, budget, prerequisites, or rules.", importance: "Keeps plans realistic." },
+              { name: "Feedback Loop", definition: "Measure one concrete signal after Step 1 and refine.", importance: "Prevents wasted effort." }
+            ],
+            visual_breakdown: [
+              { id: "frame", title: "1. Frame the Core Goal", summary: `Clarify the exact outcome wanted for "${clean.slice(0, 44)}".`, connection_to_next: "Identify key levers", icon_type: "input", metric_label: "Clarity" },
+              { id: "triage", title: "2. Break Into Sub-Parts", summary: "Separate facts, assumptions, and main bottlenecks.", connection_to_next: "Pick highest-leverage path", icon_type: "decision", metric_label: "Triage" },
+              { id: "act", title: "3. Execute Step 1", summary: "Run the smallest meaningful test or action right now.", connection_to_next: "Inspect feedback", icon_type: "process", metric_label: "Action" },
+              { id: "verify", title: "4. Verify & Compound", summary: "Review results against a concrete example and iterate.", connection_to_next: "Lasting mastery", icon_type: "output", metric_label: "Mastery" }
+            ],
+            flowchart_mermaid: `flowchart TD\n  A["Input: ${clean.replace(/"/g, "'").slice(0, 38)}"] --> B["Clarify Goal & Constraints"]\n  B --> C{"Concept or Action Challenge?"}\n  C -- "Concept" --> D["Trace Cause -> Effect Chain"]\n  C -- "Challenge" --> E["Isolate #1 Bottleneck"]\n  D --> F["Test with Concrete Example"]\n  E --> F\n  F --> G["Execute Step 1 & Iterate"]`,
+            action_steps: [
+              { step_number: 1, title: "Define Success in One Sentence", description: `Write what clarity or success looks like for "${clean.slice(0, 46)}".`, timeframe: "5 mins", outcome: "Clear target." },
+              { step_number: 2, title: "Find the #1 Bottleneck", description: "Spot the single missing piece of knowledge or resource.", timeframe: "10 mins", outcome: "Focused next move." },
+              { step_number: 3, title: "Run One Small Test Today", description: "Apply this framework on a low-risk slice and review what happened.", timeframe: "25 mins", outcome: "Real momentum." }
+            ],
+            key_takeaways: [
+              "Breaking ideas into Inputs, Decisions, Actions, and Feedback removes overwhelm.",
+              "Always pair concepts with one concrete real-world example.",
+              "Generated by Ripple local Demo Mode (add a Gemini key anytime for live AI)."
+            ],
+            examples: [
+              { title: "Applying Visual Decomposition", scenario: `Facing "${clean.slice(0, 45)}" when it feels overwhelming.`, application: "Walk through Stage 1 -> Decision Diamond -> Step 1 before adding complexity." }
+            ]
+          };
+        }
+      }
+
+      if (mode === "simplify") {
+        base.title = base.title.replace(/ \(Simplified\)$/i, "") + " (Simplified)";
+        base.problem_summary = "In plain language: " + base.problem_summary;
+        base.explanation = "Here is the simplest version:\n\n" + base.explanation.split(/\n\n+/)[0] + "\n\nRemember just the core chain: " + base.visual_breakdown.map((s) => s.title).join(" -> ") + ".";
+        base.key_takeaways = base.key_takeaways.slice(0, 3);
+      } else if (mode === "detail") {
+        base.title = base.title.replace(/ \(Deep Dive\)$/i, "") + " (Deep Dive)";
+        base.explanation += "\n\nDeep-Dive Insight: Watch the handoffs between stages (" + base.visual_breakdown.map((v) => `${v.title} [${v.connection_to_next}]`).join(" -> ") + "). Most errors occur at transitions rather than inside an isolated step.";
+        base.key_takeaways = [...base.key_takeaways, "Inspect stage transitions—handoffs determine real-world reliability."].slice(0, 6);
+      } else if (mode === "example") {
+        base.examples = [
+          ...base.examples,
+          {
+            title: `Additional Applied Example #${base.examples.length + 1}`,
+            scenario: `Someone tackling "${prompt.slice(0, 55)}" under tight time or budget constraints.`,
+            application: `They begin with "${base.action_steps[0]?.title || "Step 1"}" (${base.action_steps[0]?.timeframe || "10 mins"}), apply "${base.key_concepts[0]?.name || "the core concept"}", and measure "${base.action_steps[0]?.outcome || "clarity"}".`
+          }
+        ].slice(0, 6);
+      }
+      return base;
+    }
+
+    const GEMINI_SCHEMA = {
+      type: "OBJECT",
+      properties: {
+        title: { type: "STRING" },
+        category: { type: "STRING", enum: CATEGORIES },
+        problem_summary: { type: "STRING" },
+        explanation: { type: "STRING" },
+        key_concepts: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              name: { type: "STRING" },
+              definition: { type: "STRING" },
+              importance: { type: "STRING" }
+            },
+            required: ["name", "definition", "importance"]
+          }
+        },
+        visual_breakdown: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              id: { type: "STRING" },
+              title: { type: "STRING" },
+              summary: { type: "STRING" },
+              connection_to_next: { type: "STRING" },
+              icon_type: { type: "STRING", enum: ["input", "process", "decision", "output", "loop", "insight"] },
+              metric_label: { type: "STRING" }
+            },
+            required: ["id", "title", "summary", "connection_to_next", "icon_type"]
+          }
+        },
+        flowchart_mermaid: { type: "STRING" },
+        action_steps: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              step_number: { type: "INTEGER" },
+              title: { type: "STRING" },
+              description: { type: "STRING" },
+              timeframe: { type: "STRING" },
+              outcome: { type: "STRING" }
+            },
+            required: ["step_number", "title", "description", "timeframe", "outcome"]
+          }
+        },
+        key_takeaways: { type: "ARRAY", items: { type: "STRING" } },
+        examples: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              title: { type: "STRING" },
+              scenario: { type: "STRING" },
+              application: { type: "STRING" }
+            },
+            required: ["title", "scenario", "application"]
+          }
+        }
+      },
+      required: ["title", "category", "problem_summary", "explanation", "key_concepts", "visual_breakdown", "flowchart_mermaid", "action_steps", "key_takeaways", "examples"]
+    };
+
+    async function callGeminiOrDemo({ prompt, categoryHint, mode, currentSolution }) {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return {
+          solution: buildDemoSolution(prompt, categoryHint, mode, currentSolution),
+          meta: {
+            source: "demo",
+            model: "ripple-local-demo",
+            generatedAt: new Date().toISOString(),
+            notice: "Demo Mode active: add a Gemini API key in the top bar for live AI generation."
+          }
+        };
+      }
+
+      const systemText = [
+        "You are RIPPLE, an expert visual problem-solving AI. Philosophy: DON'T JUST TELL PEOPLE WHAT TO DO. SHOW THEM HOW TO DO IT.",
+        "Return structured JSON strictly matching the schema.",
+        "Write crisp paragraphs separated by double newlines in explanation.",
+        "For flowchart_mermaid, output valid Mermaid.js starting with 'flowchart TD' using alphanumeric node IDs (A, B, C...) and double-quoted labels like A[\"Start\"] --> B{\"Check?\"}; never nest unescaped double quotes inside labels."
+      ].join("\n");
+
+      let userText = `User prompt: "${prompt}"\n`;
+      if (categoryHint) userText += `Category hint: ${categoryHint}\n`;
+      if (mode === "simplify" && currentSolution) {
+        userText += `Task: SIMPLIFY this existing solution for maximum beginner clarity.\n${JSON.stringify(currentSolution)}`;
+      } else if (mode === "detail" && currentSolution) {
+        userText += `Task: EXPAND this existing solution in GREATER DETAIL.\n${JSON.stringify(currentSolution)}`;
+      } else if (mode === "example" && currentSolution) {
+        userText += `Task: Keep the core solution and ADD 1-2 fresh real-world examples.\n${JSON.stringify(currentSolution)}`;
+      } else if (mode === "regenerate") {
+        userText += "Task: Generate a fresh, newly structured Ripple visual solution.";
+      } else {
+        userText += "Task: Generate a complete, deeply helpful Ripple visual solution.";
+      }
+
+      const candidates = Array.from(new Set([getModelName(), "gemini-3.8-flash", "gemini-3.5-flash", "gemini-2.5-flash"]));
+      let lastErr = null;
+
+      for (const model of candidates) {
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey
+              },
+              body: JSON.stringify({
+                system_instruction: { parts: [{ text: systemText }] },
+                contents: [{ parts: [{ text: userText }] }],
+                generationConfig: {
+                  responseMimeType: "application/json",
+                  responseSchema: GEMINI_SCHEMA,
+                  temperature: mode === "regenerate" ? 0.85 : 0.45
+                }
+              })
+            }
+          );
+
+          const data = await res.json();
+          if (!res.ok) {
+            const msg = data?.error?.message || `HTTP ${res.status}`;
+            if (res.status === 404) { lastErr = new Error(msg); continue; }
+            throw new Error(msg);
+          }
+
+          const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!rawText) throw new Error("Empty Gemini response.");
+          const parsed = JSON.parse(rawText);
+          parsed.flowchart_mermaid = sanitizeMermaidCode(parsed.flowchart_mermaid);
+          if (!parsed.flowchart_mermaid.includes("-->")) {
+            parsed.flowchart_mermaid = buildFallbackMermaid(parsed.visual_breakdown, parsed.title);
+          }
+
+          return {
+            solution: parsed,
+            meta: { source: "gemini", model, generatedAt: new Date().toISOString() }
+          };
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+
+      throw lastErr || new Error("Failed to generate with Gemini.");
+    }
+
+    // =========================================================================
+    // 6. TOPIC-AWARE LABELLED SVG DIAGRAMS
+    // =========================================================================
+    function renderLabelledSvgDiagram(solution) {
+      const hay = `${solution.title} ${solution.problem_summary}`.toLowerCase();
+
+      if (hay.includes("photosynthesis") || hay.includes("chloroplast")) {
+        return `
+          <svg viewBox="0 0 760 340" class="w-full h-auto" role="img" aria-label="Labelled Photosynthesis Chloroplast Diagram">
+            <rect width="760" height="340" rx="18" fill="#FAF8FF" />
+            <circle cx="88" cy="70" r="32" fill="#FDE68A" stroke="#F59E0B" stroke-width="2.5" />
+            <text x="88" y="75" text-anchor="middle" font-size="12" font-weight="700" fill="#92400E">Sunlight</text>
+            <path d="M122 86 L208 134" stroke="#F59E0B" stroke-width="3" stroke-dasharray="6 4" />
+            <rect x="30" y="155" width="128" height="46" rx="12" fill="#E0F2FE" stroke="#0284C7" stroke-width="1.8" />
+            <text x="94" y="176" text-anchor="middle" font-size="12" font-weight="700" fill="#0C4A6E">Water (6 H2O)</text>
+            <text x="94" y="192" text-anchor="middle" font-size="10" fill="#0369A1">Absorbed by roots</text>
+            <path d="M158 178 L210 178" stroke="#0284C7" stroke-width="2.5" />
+            <rect x="30" y="232" width="128" height="46" rx="12" fill="#EDE9FE" stroke="#6D28D9" stroke-width="1.8" />
+            <text x="94" y="253" text-anchor="middle" font-size="12" font-weight="700" fill="#312E81">CO2 (6 CO2)</text>
+            <text x="94" y="269" text-anchor="middle" font-size="10" fill="#5B21B6">Enters via stomata</text>
+            <path d="M158 255 L424 255" stroke="#6D28D9" stroke-width="2.5" />
+            <rect x="195" y="42" width="405" height="258" rx="44" fill="#ECFDF5" stroke="#059669" stroke-width="3" />
+            <text x="398" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="#065F46">CHLOROPLAST (Plant Solar Factory)</text>
+            <rect x="218" y="92" width="166" height="145" rx="18" fill="#D1FAE5" stroke="#10B981" stroke-width="2" />
+            <text x="301" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">1. Light Reactions</text>
+            <text x="301" y="130" text-anchor="middle" font-size="10" fill="#047857">(Thylakoid Membranes)</text>
+            <ellipse cx="301" cy="156" rx="42" ry="11" fill="#10B981" opacity="0.28" stroke="#059669" />
+            <ellipse cx="301" cy="176" rx="42" ry="11" fill="#10B981" opacity="0.28" stroke="#059669" />
+            <ellipse cx="301" cy="196" rx="42" ry="11" fill="#10B981" opacity="0.28" stroke="#059669" />
+            <text x="301" y="222" text-anchor="middle" font-size="10" font-weight="600" fill="#065F46">Splits H2O -> ATP/NADPH</text>
+            <path d="M386 142 L430 142" stroke="#4F46E5" stroke-width="2.5" />
+            <text x="408" y="134" text-anchor="middle" font-size="10" font-weight="700" fill="#312E81">ATP/NADPH</text>
+            <path d="M430 198 L386 198" stroke="#64748B" stroke-width="2" stroke-dasharray="4 3" />
+            <text x="408" y="214" text-anchor="middle" font-size="9.5" fill="#475569">ADP/NADP+</text>
+            <rect x="432" y="92" width="150" height="175" rx="18" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2" />
+            <text x="507" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#312E81">2. Calvin Cycle</text>
+            <text x="507" y="130" text-anchor="middle" font-size="10" fill="#5B21B6">(Stroma Fluid)</text>
+            <circle cx="507" cy="182" r="34" fill="none" stroke="#6D28D9" stroke-width="2.5" stroke-dasharray="8 4" />
+            <text x="507" y="179" text-anchor="middle" font-size="10.5" font-weight="700" fill="#312E81">Fixes CO2</text>
+            <text x="507" y="194" text-anchor="middle" font-size="10" fill="#5B21B6">Builds Sugar</text>
+            <path d="M301 237 L301 312 L620 312" stroke="#059669" stroke-width="2.5" fill="none" />
+            <rect x="622" y="286" width="118" height="42" rx="12" fill="#ECFDF5" stroke="#059669" stroke-width="1.8" />
+            <text x="681" y="305" text-anchor="middle" font-size="12" font-weight="700" fill="#065F46">Oxygen (6 O2)</text>
+            <text x="681" y="320" text-anchor="middle" font-size="10" fill="#047857">Released to air</text>
+            <path d="M582 178 L620 178" stroke="#6D28D9" stroke-width="2.5" />
+            <rect x="622" y="152" width="118" height="54" rx="12" fill="#312E81" />
+            <text x="681" y="174" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFFFF">Glucose</text>
+            <text x="681" y="191" text-anchor="middle" font-size="10" fill="#DDD6FE">(C6H12O6 Fuel)</text>
+          </svg>`;
+      }
+
+      if (hay.includes("deadline") || hay.includes("triage") || hay.includes("eisenhower")) {
+        return `
+          <svg viewBox="0 0 760 320" class="w-full h-auto" role="img" aria-label="Eisenhower Priority Triage Matrix">
+            <rect width="760" height="320" rx="18" fill="#FAF8FF" />
+            <text x="380" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Eisenhower Deadline Triage Matrix (Urgency vs. Impact)</text>
+            <text x="230" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#6D28D9">URGENT (Due &lt; 48h)</text>
+            <text x="560" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#4338CA">NOT URGENT (3-14 Days)</text>
+            <text x="36" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#312E81" transform="rotate(-90 36 135)">HIGH IMPACT</text>
+            <text x="36" y="250" text-anchor="middle" font-size="11" font-weight="700" fill="#64748B" transform="rotate(-90 36 250)">LOW IMPACT</text>
+            <rect x="70" y="74" width="320" height="106" rx="14" fill="#312E81" />
+            <text x="90" y="102" font-size="13" font-weight="700" fill="#FFFFFF">Q1: DO FIRST (Peak Morning Sprint)</text>
+            <text x="90" y="124" font-size="11" fill="#DDD6FE">• High-consequence deadlines &amp; team blockers</text>
+            <text x="90" y="146" font-size="11" fill="#DDD6FE">• Single-task 90-min sprint before email</text>
+            <rect x="404" y="74" width="320" height="106" rx="14" fill="#EDE9FE" stroke="#6D28D9" stroke-width="2" />
+            <text x="424" y="102" font-size="13" font-weight="700" fill="#312E81">Q2: SCHEDULE MILESTONES</text>
+            <text x="424" y="124" font-size="11" fill="#4C1D95">• Major work due later this week or next</text>
+            <text x="424" y="146" font-size="11" fill="#4C1D95">• Lock 60-min calendar blocks + 20% buffer</text>
+            <rect x="70" y="194" width="320" height="104" rx="14" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="1.8" />
+            <text x="90" y="222" font-size="13" font-weight="700" fill="#4338CA">Q3: BATCH OR RENEGOTIATE</text>
+            <text x="90" y="244" font-size="11" fill="#475569">• Quick admin pings &amp; minor requests</text>
+            <rect x="404" y="194" width="320" height="104" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5" />
+            <text x="424" y="222" font-size="13" font-weight="700" fill="#475569">Q4: DROP OR DEFER</text>
+            <text x="424" y="244" font-size="11" fill="#64748B">• Cosmetic polish &amp; low-impact busywork</text>
+          </svg>`;
+      }
+
+      if (hay.includes("online business") || hay.includes("minimum viable offer")) {
+        return `
+          <svg viewBox="0 0 760 280" class="w-full h-auto" role="img" aria-label="Lean Online Business Launch Funnel">
+            <rect width="760" height="280" rx="18" fill="#FAF8FF" />
+            <text x="380" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Lean Online Business Launch Funnel (Validate Before Scaling)</text>
+            ${[
+              { x: 34, t: "1. Niche & Pain", s: "1 specific audience", m: "Week 1", bg: "#EDE9FE", fg: "#312E81" },
+              { x: 214, t: "2. 5-10 Calls", s: "Confirm demand", m: "Validate", bg: "#DDD6FE", fg: "#312E81" },
+              { x: 394, t: "3. 1-Page Offer", s: "Simple checkout", m: "Ship Fast", bg: "#6D28D9", fg: "#FFFFFF" },
+              { x: 574, t: "4. First 5 Sales", s: "Deliver & proof", m: "Scale", bg: "#312E81", fg: "#FFFFFF" }
+            ].map((b, i) => `
+              <rect x="${b.x}" y="68" width="152" height="145" rx="16" fill="${b.bg}" stroke="#7C3AED" stroke-width="1.5" />
+              <text x="${b.x + 76}" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="${b.fg}">${b.t}</text>
+              <text x="${b.x + 76}" y="128" text-anchor="middle" font-size="11" fill="${b.fg}">${b.s}</text>
+              <rect x="${b.x + 36}" y="160" width="80" height="26" rx="8" fill="#FFFFFF" fill-opacity="${b.fg === "#FFFFFF" ? "0.2" : "0.85"}" />
+              <text x="${b.x + 76}" y="177" text-anchor="middle" font-size="11" font-weight="700" fill="${b.fg}">${b.m}</text>
+              ${i < 3 ? `<path d="M${b.x + 154} 140 L${b.x + 178} 140" stroke="#6D28D9" stroke-width="3" />` : ""}
+            `).join("")}
+            <rect x="90" y="232" width="580" height="30" rx="10" fill="#EEF2FF" />
+            <text x="380" y="251" text-anchor="middle" font-size="11" font-weight="600" fill="#312E81">Rule: Prove willingness to pay with a 1-page offer before building complex automation.</text>
+          </svg>`;
+      }
+
+      // Dynamic Labelled System Map for ANY topic
+      const stages = (solution.visual_breakdown || []).slice(0, 4);
+      const w = 158, gap = 24;
+      const startX = Math.max(24, (760 - (stages.length * w + Math.max(0, stages.length - 1) * gap)) / 2);
+      return `
+        <svg viewBox="0 0 760 275" class="w-full h-auto" role="img" aria-label="Dynamic Labelled System Map">
+          <rect width="760" height="275" rx="18" fill="#FAF8FF" />
+          <text x="380" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Labelled System Map: ${escapeHtml(solution.title.slice(0, 52))}</text>
+          ${stages.map((st, idx) => {
+            const x = startX + idx * (w + gap);
+            const isLast = idx === stages.length - 1;
+            const fill = idx === 0 ? "#EDE9FE" : isLast ? "#312E81" : "#FFFFFF";
+            const fg = isLast ? "#FFFFFF" : "#1E1B4B";
+            const sub = isLast ? "#DDD6FE" : "#5B21B6";
+            return `
+              <rect x="${x}" y="64" width="${w}" height="136" rx="16" fill="${fill}" stroke="#6D28D9" stroke-width="1.8" />
+              <circle cx="${x + 24}" cy="88" r="11" fill="${isLast ? "#7C3AED" : "#312E81"}" />
+              <text x="${x + 24}" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">${idx + 1}</text>
+              <text x="${x + 42}" y="92" font-size="10" font-weight="700" fill="${sub}">${escapeHtml(String(st.icon_type).toUpperCase())}</text>
+              <foreignObject x="${x + 12}" y="108" width="${w - 24}" height="82">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="color:${fg};font-size:12px;font-weight:700;line-height:1.3;">${escapeHtml(st.title.replace(/^\d+\.\s*/, ""))}</div>
+                <div xmlns="http://www.w3.org/1999/xhtml" style="color:${sub};font-size:10.5px;margin-top:6px;line-height:1.3;">${escapeHtml(st.connection_to_next)}</div>
+              </foreignObject>
+              ${!isLast ? `<path d="M${x + w + 2} 132 L${x + w + gap - 4} 132" stroke="#6D28D9" stroke-width="2.5" />` : ""}
+            `;
+          }).join("")}
+          <rect x="65" y="220" width="630" height="34" rx="10" fill="#EDE9FE" />
+          <text x="380" y="241" text-anchor="middle" font-size="11.5" font-weight="600" fill="#312E81">Core Principle: ${escapeHtml((solution.key_concepts?.[0]?.name || solution.category) + " — " + (solution.key_concepts?.[0]?.importance || solution.problem_summary).slice(0, 62))}</text>
+        </svg>`;
+    }
+
+    // =========================================================================
+    // 7. EXPORT & RESULT ACTIONS (ALL 8 BUTTONS WORKING)
+    // =========================================================================
+    function formatSolutionMarkdown(s) {
+      return [
+        `# ${s.title}`,
+        `**Category:** ${s.category}`,
+        "",
+        "## Summary",
+        s.problem_summary,
+        "",
+        "## Explanation",
+        s.explanation,
+        "",
+        "## Key Concepts",
+        ...s.key_concepts.map((c) => `- **${c.name}**: ${c.definition} *(Importance: ${c.importance})*`),
+        "",
+        "## Visual Breakdown",
+        ...s.visual_breakdown.map((v, i) => `${i + 1}. **${v.title}** — ${v.summary} *(Leads to: ${v.connection_to_next})*`),
+        "",
+        "## Flowchart (Mermaid)",
+        "```mermaid",
+        s.flowchart_mermaid,
+        "```",
+        "",
+        "## Action Roadmap",
+        ...s.action_steps.map((a) => `### Step ${a.step_number}: ${a.title} (${a.timeframe})\n${a.description}\n- Outcome: ${a.outcome}`),
+        "",
+        "## Examples",
+        ...s.examples.map((e) => `### ${e.title}\n- Scenario: ${e.scenario}\n- Application: ${e.application}`),
+        "",
+        "## Key Takeaways",
+        ...s.key_takeaways.map((t) => `- ${t}`),
+        "",
+        "---",
+        "Generated by RIPPLE — Complex ideas. Beautifully understood."
+      ].join("\n");
+    }
+
+    function downloadCurrentSolution() {
+      if (!state.activeSolution) return;
+      const md = formatSolutionMarkdown(state.activeSolution);
+      const slug = state.activeSolution.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 50);
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ripple-${slug || "solution"}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Downloaded Markdown solution!");
+    }
+
+    async function copyCurrentExplanation() {
+      if (!state.activeSolution) return;
+      try {
+        await navigator.clipboard.writeText(formatSolutionMarkdown(state.activeSolution));
+        showToast("Copied full explanation to clipboard!");
+      } catch {
+        showToast("Clipboard blocked—use Download instead.");
+      }
+    }
+
+    function printCurrentSolution() {
+      state.activeTab = "all";
+      render();
+      setTimeout(() => window.print(), 220);
+    }
+
+    async function transformSolution(mode) {
+      if (!state.activeSolution || state.isBusy) return;
+      state.isBusy = true;
+      state.error = null;
+      render();
+
+      try {
+        const res = await callGeminiOrDemo({
+          prompt: state.activeQuery || state.activeSolution.title,
+          categoryHint: state.activeSolution.category,
+          mode,
+          currentSolution: state.activeSolution
+        });
+        state.activeSolution = res.solution;
+        state.activeMeta = res.meta;
+        if (mode === "example") state.activeTab = "examples";
+        showToast(
+          mode === "simplify" ? "Simplified explanation!" :
+          mode === "detail" ? "Expanded in greater detail!" :
+          mode === "example" ? "Added another real-world example!" :
+          "Regenerated solution!"
+        );
+      } catch (err) {
+        state.error = err.message || "Could not update solution.";
+      } finally {
+        state.isBusy = false;
+        render();
+      }
+    }
+
+    // =========================================================================
+    // 8. NAVIGATION & PAGE LAUNCHERS
+    // =========================================================================
+    function navigateTo(route) {
+      state.route = route;
+      state.error = null;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      render();
+    }
+
+    async function generateNewRipple(rawPrompt, categoryHint) {
+      const prompt = String(rawPrompt || "").trim();
+      if (prompt.length < 3) {
+        const errEl = document.getElementById("homeInputError");
+        if (errEl) {
+          errEl.textContent = "Please enter at least 3 characters describing what you want to understand or solve.";
+          errEl.classList.remove("hidden");
+        }
+        return;
+      }
+
+      state.route = "result";
+      state.activeQuery = prompt;
+      state.activeTab = "overview";
+      state.mermaidZoom = 1;
+      state.isLoading = true;
+      state.error = null;
+      render();
+
+      try {
+        const res = await callGeminiOrDemo({ prompt, categoryHint, mode: "initial" });
+        state.activeSolution = res.solution;
+        state.activeMeta = res.meta;
+      } catch (err) {
+        state.error = err.message || "Unable to generate solution.";
+        state.activeSolution = null;
+      } finally {
+        state.isLoading = false;
+        render();
+      }
+    }
+
+    function openExplorePreset(slug) {
+      const found = PRESET_SOLUTIONS.find((p) => p.slug === slug);
+      if (!found) return;
+      state.route = "result";
+      state.activeQuery = found.query;
+      state.activeSolution = JSON.parse(JSON.stringify(found.solution));
+      state.activeMeta = { source: "preset", model: "ripple-curated-example", generatedAt: new Date().toISOString() };
+      state.activeTab = "overview";
+      state.mermaidZoom = 1;
+      state.error = null;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      render();
+    }
+
+    function openSavedItem(id) {
+      const found = getSavedRipples().find((x) => x.id === id);
+      if (!found) return;
+      state.route = "result";
+      state.activeQuery = found.query;
+      state.activeSolution = found.solution;
+      state.activeMeta = found.meta;
+      state.activeTab = "overview";
+      state.mermaidZoom = 1;
+      state.error = null;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      render();
+    }
+
+    // =========================================================================
+    // 9. MERMAID CLIENT RENDERING HOOK
+    // =========================================================================
+    async function hydrateMermaid() {
+      const container = document.getElementById("mermaidContainer");
+      if (!container || !state.activeSolution) return;
+
+      const rawCode = sanitizeMermaidCode(state.activeSolution.flowchart_mermaid);
+      if (typeof mermaid === "undefined") {
+        container.innerHTML = `<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">Mermaid library unavailable offline. Visual stages:<div class="mt-2 flex flex-wrap gap-2">${state.activeSolution.visual_breakdown.map((s) => `<span class="rounded-lg bg-white px-2.5 py-1 font-semibold border border-violet-200">${escapeHtml(s.title)}</span>`).join(" → ")}</div></div>`;
+        return;
+      }
+
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "strict",
+        theme: "base",
+        flowchart: { curve: "basis", htmlLabels: true, padding: 14 },
+        themeVariables: {
+          primaryColor: "#ede9fe",
+          primaryTextColor: "#1e1b4b",
+          primaryBorderColor: "#6d28d9",
+          lineColor: "#4f46e5",
+          secondaryColor: "#f5f3ff",
+          tertiaryColor: "#ffffff"
+        }
+      });
+
+      try {
+        const res = await mermaid.render("mmd-" + Date.now(), rawCode);
+        container.innerHTML = `<div class="flex justify-center transition-transform" style="transform: scale(${state.mermaidZoom}); transform-origin: top center;">${res.svg}</div>`;
+      } catch {
+        try {
+          const fallback = buildFallbackMermaid(state.activeSolution.visual_breakdown, state.activeSolution.title);
+          const fbRes = await mermaid.render("mmd-fb-" + Date.now(), fallback);
+          container.innerHTML = `<p class="mb-3 text-center text-xs font-medium text-amber-700">Auto-repaired diagram structure for clean rendering:</p><div class="flex justify-center transition-transform" style="transform: scale(${state.mermaidZoom}); transform-origin: top center;">${fbRes.svg}</div>`;
+        } catch (err) {
+          container.innerHTML = `<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">Could not render diagram (${escapeHtml(err.message)}).</div>`;
+        }
+      }
+    }
+
+    // =========================================================================
+    // 10. VIEW RENDERERS
+    // =========================================================================
+    function renderHomeView() {
+      return `
+        <div class="fade-in pb-14">
+          <section class="mx-auto max-w-5xl px-4 pt-14 text-center sm:px-6 sm:pt-20">
+            <div class="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-1.5 text-xs font-semibold text-violet-800 shadow-xs">
+              ✦ AI-Powered Visual Problem-Solving Platform
+            </div>
+            <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-indigo-950 sm:text-5xl md:text-6xl">
+              Complex ideas. <span class="text-violet-700">Beautifully understood.</span>
+            </h1>
+            <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+              Don't just read walls of text. Enter any question, complicated concept, personal challenge, or business idea—Ripple turns it into flowcharts, infographics, labelled diagrams, and step-by-step roadmaps.
+            </p>
+
+            <form onsubmit="event.preventDefault(); generateNewRipple(document.getElementById('homePromptInput').value)" class="mx-auto mt-9 max-w-3xl rounded-3xl border border-violet-200 bg-white p-3 shadow-lg shadow-violet-200/30">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <input id="homePromptInput" type="text" placeholder="What would you like to understand or solve today?" class="w-full rounded-2xl bg-transparent px-4 py-3.5 text-base text-indigo-950 placeholder:text-slate-400 focus:outline-none" />
+                <button type="submit" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-indigo-900 px-6 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-violet-700">
+                  Generate My Ripple →
+                </button>
+              </div>
+            </form>
+            <p id="homeInputError" class="mt-3 hidden text-sm font-medium text-rose-600"></p>
+
+            <div class="mx-auto mt-7 max-w-3xl">
+              <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Clickable Example Prompts</p>
+              <div class="flex flex-wrap justify-center gap-2">
+                ${HOMEPAGE_EXAMPLES.map((p) => `
+                  <button type="button" onclick="generateNewRipple('${escapeHtml(p)}')" class="rounded-full border border-violet-200 bg-white px-4 py-2 text-xs font-medium text-indigo-950 transition hover:border-violet-400 hover:bg-violet-50 sm:text-sm">${escapeHtml(p)}</button>
+                `).join("")}
+              </div>
+            </div>
+          </section>
+
+          <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6">
+            <div class="mb-6">
+              <h2 class="text-2xl font-bold tracking-tight text-indigo-950">Explore by Category</h2>
+              <p class="text-sm text-slate-600">Built for students, entrepreneurs, professionals, creators, and everyday problem solvers.</p>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              ${CATEGORY_CARDS.map((c) => `
+                <button type="button" onclick="generateNewRipple('${escapeHtml(c.starterPrompt)}', '${escapeHtml(c.name)}')" class="group rounded-2xl border border-violet-200/80 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-violet-400 hover:shadow-md">
+                  <div class="flex items-center justify-between">
+                    <span class="rounded-lg bg-violet-100 px-2.5 py-1 text-xs font-bold text-violet-800">${escapeHtml(c.name)}</span>
+                    <span class="text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-violet-700">→</span>
+                  </div>
+                  <p class="mt-3 text-sm leading-relaxed text-slate-600">${escapeHtml(c.description)}</p>
+                </button>
+              `).join("")}
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function renderExploreView() {
+      const q = state.exploreSearch.trim().toLowerCase();
+      const filtered = PRESET_SOLUTIONS.filter((item) => {
+        const matchCat = state.exploreCategory === "All" || item.solution.category === state.exploreCategory;
+        const matchText = !q || item.solution.title.toLowerCase().includes(q) || item.shortDescription.toLowerCase().includes(q);
+        return matchCat && matchText;
+      });
+
+      return `
+        <div class="fade-in mx-auto max-w-6xl px-4 py-12 sm:px-6">
+          <h1 class="text-3xl font-extrabold tracking-tight text-indigo-950">Explore Visual Solutions</h1>
+          <p class="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">Open curated visual breakdowns, flowcharts, labelled diagrams, and step-by-step roadmaps across all 7 categories.</p>
+
+          <div class="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-wrap gap-2">
+              ${["All", ...CATEGORIES].map((cat) => `
+                <button type="button" onclick="state.exploreCategory='${escapeHtml(cat)}'; render()" class="rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${state.exploreCategory === cat ? "bg-indigo-900 text-white" : "border border-violet-200 bg-white text-slate-700 hover:bg-violet-50"}">${escapeHtml(cat)}</button>
+              `).join("")}
+            </div>
+            <input type="text" value="${escapeHtml(state.exploreSearch)}" oninput="state.exploreSearch=this.value; render()" placeholder="Filter topics..." class="w-full rounded-xl border border-violet-200 bg-white px-3.5 py-2 text-sm text-indigo-950 focus:border-violet-500 focus:outline-none sm:w-64" />
+          </div>
+
+          <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            ${filtered.map((item) => `
+              <button type="button" onclick="openExplorePreset('${escapeHtml(item.slug)}')" class="group flex flex-col justify-between rounded-2xl border border-violet-200/80 bg-white p-5 text-left shadow-xs transition hover:-translate-y-0.5 hover:border-violet-400 hover:shadow-md">
+                <div>
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">${escapeHtml(item.solution.category)}</span>
+                    <span class="text-xs font-bold text-slate-400 group-hover:text-violet-700">Open ↗</span>
+                  </div>
+                  <div class="mt-4 rounded-xl border border-violet-100 bg-[#FAF8FF] p-3">
+                    <div class="flex items-center justify-between gap-1">
+                      ${item.solution.visual_breakdown.slice(0, 3).map((st, i) => `
+                        <div class="flex-1 rounded-lg border border-violet-200 bg-white px-2 py-1.5 text-center">
+                          <div class="text-[10px] font-bold text-violet-700">Stage ${i + 1}</div>
+                          <div class="truncate text-[11px] font-semibold text-indigo-950">${escapeHtml(st.title.replace(/^\d+\.\s*/, ""))}</div>
+                        </div>
+                        ${i < 2 ? '<span class="text-xs font-bold text-violet-400">→</span>' : ""}
+                      `).join("")}
+                    </div>
+                  </div>
+                  <h3 class="mt-4 text-base font-bold text-indigo-950 group-hover:text-violet-700">${escapeHtml(item.solution.title)}</h3>
+                  <p class="mt-1.5 text-sm leading-relaxed text-slate-600">${escapeHtml(item.shortDescription)}</p>
+                </div>
+                <div class="mt-4 flex justify-between border-t border-violet-100 pt-3 text-xs font-medium text-slate-500">
+                  <span>${item.solution.visual_breakdown.length} visual stages</span>
+                  <span>${item.solution.action_steps.length} action steps</span>
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        </div>`;
+    }
+
+    function renderSavedView() {
+      const items = getSavedRipples();
+      return `
+        <div class="fade-in mx-auto max-w-5xl px-4 py-12 sm:px-6">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-extrabold tracking-tight text-indigo-950">Saved Solutions</h1>
+              <p class="mt-2 text-sm text-slate-600">Stored privately in your browser's localStorage—no account required.</p>
+            </div>
+            ${items.length ? `<button type="button" onclick="clearAllSavedItems()" class="rounded-xl border border-rose-200 bg-white px-4 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50">Clear All</button>` : ""}
+          </div>
+
+          ${!items.length ? `
+            <div class="mt-10 rounded-3xl border border-violet-200/80 bg-white p-12 text-center shadow-xs">
+              <h2 class="text-lg font-bold text-indigo-950">No saved solutions yet</h2>
+              <p class="mx-auto mt-2 max-w-md text-sm text-slate-600">Generate a Ripple or explore an example, then click "Save solution" to keep its diagrams and roadmap here.</p>
+              <div class="mt-6 flex justify-center gap-3">
+                <button type="button" onclick="navigateTo('home')" class="rounded-xl bg-indigo-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-700">Ask a Question</button>
+                <button type="button" onclick="navigateTo('explore')" class="rounded-xl border border-violet-200 bg-white px-5 py-2.5 text-sm font-semibold text-indigo-950 hover:bg-violet-50">Browse Explore</button>
+              </div>
+            </div>
+          ` : `
+            <div class="mt-8 grid gap-4">
+              ${items.map((item) => `
+                <div class="flex flex-col justify-between gap-4 rounded-2xl border border-violet-200/80 bg-white p-5 shadow-xs sm:flex-row sm:items-center">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="rounded-full bg-violet-100 px-3 py-0.5 text-xs font-semibold text-violet-800">${escapeHtml(item.solution.category)}</span>
+                      <span class="text-xs text-slate-400">Saved ${new Date(item.savedAt).toLocaleDateString()}</span>
+                    </div>
+                    <h2 class="mt-2 truncate text-lg font-bold text-indigo-950">${escapeHtml(item.solution.title)}</h2>
+                    <p class="mt-1 line-clamp-2 text-sm text-slate-600">${escapeHtml(item.solution.problem_summary)}</p>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-2">
+                    <button type="button" onclick="openSavedItem('${escapeHtml(item.id)}')" class="rounded-xl bg-indigo-900 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-700">Open ↗</button>
+                    <button type="button" onclick="deleteSavedItem('${escapeHtml(item.id)}')" class="rounded-xl border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50">Delete</button>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          `}
+        </div>`;
+    }
+
+    function renderAboutView() {
+      return `
+        <div class="fade-in mx-auto max-w-4xl px-4 py-14 sm:px-6">
+          <span class="rounded-full bg-violet-100 px-3.5 py-1 text-xs font-bold text-violet-800">ABOUT RIPPLE</span>
+          <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-indigo-950 sm:text-4xl">
+            Don't just tell people what to do. <span class="text-violet-700">Show them how to do it.</span>
+          </h1>
+          <div class="mt-8 rounded-3xl border border-violet-200/80 bg-white p-7 shadow-xs sm:p-9">
+            <h2 class="text-lg font-bold text-indigo-950">Our Mission</h2>
+            <p class="mt-3 text-base leading-relaxed text-slate-700">
+              “Knowledge becomes more powerful when people can understand it, visualise it and apply it. Ripple transforms complex information into meaningful experiences that help people move from confusion to clarity.”
+            </p>
+          </div>
+          <div class="mt-8 grid gap-5 sm:grid-cols-2">
+            ${[
+              ["Visual-First Explanations", "Infographics, labelled SVG diagrams, and concept cards replace intimidating walls of text."],
+              ["Dynamic Flowcharts", "Interactive Mermaid workflows and decision trees clarify choices, loops, and cause-and-effect."],
+              ["For Everyone", "Built for students, entrepreneurs, professionals, creators, and everyday problem solving."],
+              ["Actionable Roadmaps", "Trackable, numbered steps with timeframes help you move smoothly from insight to execution."]
+            ].map(([t, d]) => `
+              <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs">
+                <h3 class="text-base font-bold text-indigo-950">${escapeHtml(t)}</h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-slate-600">${escapeHtml(d)}</p>
+              </div>
+            `).join("")}
+          </div>
+          <div class="mt-10 flex gap-3">
+            <button type="button" onclick="navigateTo('home')" class="rounded-xl bg-indigo-900 px-5 py-3 text-sm font-bold text-white hover:bg-violet-700">Try Ripple Now →</button>
+            <button type="button" onclick="navigateTo('explore')" class="rounded-xl border border-violet-200 bg-white px-5 py-3 text-sm font-bold text-indigo-950 hover:bg-violet-50">Browse Examples</button>
+          </div>
+        </div>`;
+    }
+
+    function renderResultView() {
+      if (state.isLoading) {
+        return `
+          <div class="mx-auto flex max-w-3xl flex-col items-center justify-center px-4 py-24 text-center">
+            <div class="h-14 w-14 animate-spin rounded-full border-4 border-violet-200 border-t-violet-700"></div>
+            <h1 class="mt-6 text-2xl font-bold text-indigo-950">Designing your visual Ripple...</h1>
+            <p class="mt-2 max-w-md text-sm text-slate-600">Structuring concepts, generating a Mermaid flowchart, building infographics, and mapping actionable steps.</p>
+          </div>`;
+      }
+
+      if (!state.activeSolution) {
+        return `
+          <div class="mx-auto max-w-xl px-4 py-20 text-center">
+            <div class="rounded-3xl border border-violet-200 bg-white p-8 shadow-xs">
+              <h1 class="text-xl font-bold text-indigo-950">Could not load solution</h1>
+              <p class="mt-2 text-sm text-rose-700">${escapeHtml(state.error || "Please enter a question from the homepage.")}</p>
+              <button type="button" onclick="navigateTo('home')" class="mt-6 rounded-xl bg-indigo-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-700">← Back to Home</button>
+            </div>
+          </div>`;
+      }
+
+      const s = state.activeSolution;
+      const meta = state.activeMeta || { source: "demo", model: "demo" };
+      const tab = state.activeTab;
+      const showAll = tab === "all";
+      const saved = isSolutionSaved(s.title);
+      const completed = getStepProgress(s.title);
+      const pct = s.action_steps.length ? Math.round((completed.length / s.action_steps.length) * 100) : 0;
+
+      return `
+        <div class="fade-in mx-auto max-w-6xl px-4 py-7 sm:px-6">
+          <button type="button" onclick="navigateTo('home')" class="no-print mb-4 inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:text-indigo-950">← Ask another question</button>
+
+          ${meta.source === "demo" ? `
+            <div class="no-print mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              <strong>Demo Mode:</strong> ${escapeHtml(meta.notice || "Showing curated/demo output. Click 'Demo Mode · API Key' in the header to connect live Gemini AI.")}
+            </div>` : ""}
+
+          ${state.error ? `
+            <div class="no-print mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">${escapeHtml(state.error)}</div>` : ""}
+
+          <!-- HEADER CARD + 8 ACTION BUTTONS -->
+          <div class="rounded-3xl border border-violet-200/80 bg-white p-6 shadow-xs sm:p-8">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-full bg-violet-100 px-3.5 py-1 text-xs font-bold text-violet-800">${escapeHtml(s.category)}</span>
+                <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+                  ${meta.source === "gemini" ? `Live Gemini (${escapeHtml(meta.model)})` : meta.source === "preset" ? "Curated Ripple Example" : "Demo Mode Output"}
+                </span>
+              </div>
+              <span class="text-xs text-slate-400">Prompt: “${escapeHtml(state.activeQuery)}”</span>
+            </div>
+
+            <h1 class="mt-4 text-2xl font-extrabold tracking-tight text-indigo-950 sm:text-3xl">${escapeHtml(s.title)}</h1>
+            <p class="mt-3 rounded-2xl border border-violet-100 bg-[#FAF8FF] p-4 text-sm leading-relaxed text-indigo-950 sm:text-base">${escapeHtml(s.problem_summary)}</p>
+
+            <div class="no-print mt-6 flex flex-wrap items-center gap-2 border-t border-violet-100 pt-5">
+              <button type="button" ${state.isBusy ? "disabled" : ""} onclick="transformSolution('simplify')" class="rounded-xl border border-violet-200 bg-white px-3.5 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50 disabled:opacity-50">Simplify this explanation</button>
+              <button type="button" ${state.isBusy ? "disabled" : ""} onclick="transformSolution('detail')" class="rounded-xl border border-violet-200 bg-white px-3.5 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50 disabled:opacity-50">Explain in greater detail</button>
+              <button type="button" ${state.isBusy ? "disabled" : ""} onclick="transformSolution('example')" class="rounded-xl border border-violet-200 bg-white px-3.5 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50 disabled:opacity-50">Give me another example</button>
+              <button type="button" ${state.isBusy ? "disabled" : ""} onclick="transformSolution('regenerate')" class="rounded-xl border border-violet-200 bg-white px-3.5 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50 disabled:opacity-50">${state.isBusy ? "Updating..." : "Regenerate solution"}</button>
+
+              <div class="ml-auto flex flex-wrap items-center gap-2">
+                <button type="button" onclick="saveCurrentSolution()" class="rounded-xl px-3.5 py-2 text-xs font-semibold ${saved ? "bg-emerald-600 text-white" : "bg-indigo-900 text-white hover:bg-violet-700"}">${saved ? "✓ Saved" : "Save solution"}</button>
+                <button type="button" onclick="downloadCurrentSolution()" class="rounded-xl border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50">Download</button>
+                <button type="button" onclick="printCurrentSolution()" class="rounded-xl border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50">Print</button>
+                <button type="button" onclick="copyCurrentExplanation()" class="rounded-xl border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-indigo-950 hover:bg-violet-50">Copy explanation</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION TABS -->
+          <div class="no-print mt-6 flex gap-2 overflow-x-auto pb-2">
+            ${[
+              ["overview", "Overview & Infographic"],
+              ["visuals", "Visual Breakdown & Diagram"],
+              ["flowchart", "Flowchart"],
+              ["roadmap", "Action Roadmap"],
+              ["examples", "Examples & Takeaways"],
+              ["all", "View All"]
+            ].map(([id, lbl]) => `
+              <button type="button" onclick="state.activeTab='${id}'; render()" class="shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold transition sm:text-sm ${tab === id ? "bg-indigo-900 text-white shadow-xs" : "border border-violet-200 bg-white text-slate-700 hover:bg-violet-50"}">${lbl}</button>
+            `).join("")}
+          </div>
+
+          <div class="mt-6 space-y-8">
+            ${(tab === "overview" || showAll) ? `
+              <!-- INFOGRAPHIC SUMMARY -->
+              <section class="print-break-avoid rounded-2xl border border-violet-200 bg-gradient-to-br from-indigo-950 via-indigo-900 to-violet-800 p-6 text-white shadow-md sm:p-8">
+                <div class="flex flex-wrap items-end justify-between gap-3 border-b border-white/15 pb-4">
+                  <div>
+                    <span class="rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold tracking-wide text-violet-100">VISUAL INFOGRAPHIC AT A GLANCE</span>
+                    <h2 class="mt-2 text-xl font-bold sm:text-2xl">${escapeHtml(s.title)}</h2>
+                  </div>
+                  <span class="rounded-xl border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">${escapeHtml(s.category)}</span>
+                </div>
+                <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  ${[
+                    ["Core Concepts", s.key_concepts.length],
+                    ["Visual Stages", s.visual_breakdown.length],
+                    ["Action Steps", s.action_steps.length],
+                    ["Examples", s.examples.length]
+                  ].map(([k, v]) => `
+                    <div class="rounded-xl border border-white/15 bg-white/10 px-4 py-3">
+                      <div class="text-2xl font-bold">${v}</div>
+                      <div class="text-xs text-violet-200">${k}</div>
+                    </div>
+                  `).join("")}
+                </div>
+                <div class="mt-5 grid gap-3 md:grid-cols-4">
+                  ${s.visual_breakdown.slice(0, 4).map((st, idx) => `
+                    <div class="rounded-xl border border-white/15 bg-white/5 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-violet-400 text-xs font-bold text-indigo-950">${idx + 1}</span>
+                        ${st.metric_label ? `<span class="rounded bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-violet-100">${escapeHtml(st.metric_label)}</span>` : ""}
+                      </div>
+                      <h3 class="mt-2 text-sm font-semibold">${escapeHtml(st.title.replace(/^\d+\.\s*/, ""))}</h3>
+                      <p class="mt-1 text-xs text-violet-200">${escapeHtml(st.connection_to_next)}</p>
+                    </div>
+                  `).join("")}
+                </div>
+              </section>
+
+              <div class="grid gap-6 lg:grid-cols-5">
+                <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs lg:col-span-3">
+                  <h2 class="text-lg font-bold text-indigo-950">Clear Explanation</h2>
+                  <div class="mt-3 space-y-4 text-sm leading-relaxed text-slate-700 sm:text-base">
+                    ${s.explanation.split(/\n\n+/).map((p) => `<p>${escapeHtml(p)}</p>`).join("")}
+                  </div>
+                </div>
+                <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs lg:col-span-2">
+                  <h2 class="text-lg font-bold text-indigo-950">Key Concepts</h2>
+                  <div class="mt-3 space-y-3">
+                    ${s.key_concepts.map((c) => `
+                      <div class="rounded-xl border border-violet-100 bg-[#FAF8FF] p-3.5">
+                        <h3 class="text-sm font-bold text-indigo-950">${escapeHtml(c.name)}</h3>
+                        <p class="mt-1 text-xs leading-relaxed text-slate-700">${escapeHtml(c.definition)}</p>
+                        <p class="mt-1.5 text-[11px] font-semibold text-violet-700">Why it matters: ${escapeHtml(c.importance)}</p>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              </div>` : ""}
+
+            ${(tab === "visuals" || showAll) ? `
+              <div class="space-y-6">
+                <div class="print-break-avoid rounded-2xl border border-violet-200/80 bg-white p-5 shadow-xs">
+                  <div class="mb-3 flex items-center justify-between">
+                    <div>
+                      <h3 class="text-base font-bold text-indigo-950">Labelled Visual Diagram</h3>
+                      <p class="text-xs text-slate-500">Topic-aware SVG diagram illustrating key parts and relationships.</p>
+                    </div>
+                    <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-semibold text-violet-800">Diagram View</span>
+                  </div>
+                  <div class="overflow-hidden rounded-xl border border-violet-100 bg-[#FAF8FF]">
+                    ${renderLabelledSvgDiagram(s)}
+                  </div>
+                </div>
+
+                <div>
+                  <h2 class="mb-3 text-lg font-bold text-indigo-950">Visual Concept Breakdown</h2>
+                  <div class="grid gap-4 md:grid-cols-2">
+                    ${s.visual_breakdown.map((st) => `
+                      <div class="print-break-avoid flex flex-col justify-between rounded-2xl border border-violet-200/80 bg-white p-5 shadow-xs">
+                        <div>
+                          <div class="flex items-center justify-between gap-2">
+                            <span class="rounded-md bg-indigo-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-indigo-800">${escapeHtml(st.icon_type)}</span>
+                            ${st.metric_label ? `<span class="rounded-full border border-violet-200 bg-violet-50 px-3 py-0.5 text-xs font-semibold text-violet-800">${escapeHtml(st.metric_label)}</span>` : ""}
+                          </div>
+                          <h3 class="mt-3 text-base font-bold text-indigo-950">${escapeHtml(st.title)}</h3>
+                          <p class="mt-1.5 text-sm leading-relaxed text-slate-600">${escapeHtml(st.summary)}</p>
+                        </div>
+                        <div class="mt-4 border-t border-violet-100 pt-3 text-xs font-semibold text-violet-700">→ Next relationship: ${escapeHtml(st.connection_to_next)}</div>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              </div>` : ""}
+
+            ${(tab === "flowchart" || showAll) ? `
+              <div class="rounded-2xl border border-violet-200/80 bg-white shadow-xs">
+                <div class="no-print flex flex-wrap items-center justify-between gap-3 border-b border-violet-100 px-5 py-3.5">
+                  <div>
+                    <h3 class="text-sm font-semibold text-indigo-950">Interactive Process Flowchart (Mermaid.js)</h3>
+                    <p class="text-xs text-slate-500">Decision trees, workflows, and concept relationships.</p>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="state.mermaidZoom=Math.max(0.65,+(state.mermaidZoom-0.15).toFixed(2)); render()" class="rounded-lg border border-violet-200 px-2.5 py-1 text-xs font-bold text-indigo-900 hover:bg-violet-50">−</button>
+                    <span class="min-w-[44px] text-center text-xs font-medium text-slate-600">${Math.round(state.mermaidZoom * 100)}%</span>
+                    <button type="button" onclick="state.mermaidZoom=Math.min(1.6,+(state.mermaidZoom+0.15).toFixed(2)); render()" class="rounded-lg border border-violet-200 px-2.5 py-1 text-xs font-bold text-indigo-900 hover:bg-violet-50">+</button>
+                    <button type="button" onclick="state.mermaidZoom=1; render()" class="rounded-lg border border-violet-200 px-2.5 py-1 text-xs font-semibold text-indigo-900 hover:bg-violet-50">Reset</button>
+                    <button type="button" onclick="state.showMermaidCode=!state.showMermaidCode; render()" class="rounded-lg border border-violet-200 px-2.5 py-1 text-xs font-semibold text-indigo-900 hover:bg-violet-50">${state.showMermaidCode ? "Hide Syntax" : "Syntax"}</button>
+                  </div>
+                </div>
+                ${state.showMermaidCode ? `<pre class="no-print overflow-x-auto border-b border-violet-100 bg-indigo-950 p-4 text-xs text-violet-100"><code>${escapeHtml(sanitizeMermaidCode(s.flowchart_mermaid))}</code></pre>` : ""}
+                <div id="mermaidContainer" class="overflow-x-auto p-6 text-center text-sm text-slate-500">Rendering flowchart...</div>
+              </div>` : ""}
+
+            ${(tab === "roadmap" || showAll) ? `
+              <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs">
+                <div class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-violet-100 pb-4">
+                  <div>
+                    <h3 class="text-lg font-bold text-indigo-950">Step-by-Step Visual Roadmap</h3>
+                    <p class="text-xs text-slate-500">Click any numbered circle to mark progress.</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="h-2.5 w-32 overflow-hidden rounded-full bg-violet-100">
+                      <div class="h-full rounded-full bg-violet-600 transition-all" style="width:${pct}%"></div>
+                    </div>
+                    <span class="text-xs font-bold text-indigo-950">${completed.length}/${s.action_steps.length} done</span>
+                  </div>
+                </div>
+
+                <div class="relative space-y-5 pl-6 before:absolute before:left-[19px] before:top-3 before:bottom-3 before:w-0.5 before:bg-violet-200">
+                  ${s.action_steps.map((st) => {
+                    const done = completed.includes(st.step_number);
+                    return `
+                      <div class="print-break-avoid relative rounded-2xl border p-5 ${done ? "border-emerald-200 bg-emerald-50/40" : "border-violet-100 bg-violet-50/30"}">
+                        <button type="button" onclick="toggleStep('${escapeHtml(s.title)}', ${st.step_number})" class="absolute -left-8 top-5 flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold shadow-xs ${done ? "border-emerald-600 bg-emerald-600 text-white" : "border-violet-600 bg-white text-indigo-950 hover:bg-violet-100"}">
+                          ${done ? "✓" : st.step_number}
+                        </button>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                          <h4 class="text-base font-bold ${done ? "line-through text-emerald-950" : "text-indigo-950"}">${escapeHtml(st.title)}</h4>
+                          <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-violet-700 shadow-xs">⏱ ${escapeHtml(st.timeframe)}</span>
+                        </div>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-700">${escapeHtml(st.description)}</p>
+                        <p class="mt-2.5 text-xs font-semibold text-indigo-900">Outcome: ${escapeHtml(st.outcome)}</p>
+                      </div>`;
+                  }).join("")}
+                </div>
+              </div>` : ""}
+
+            ${(tab === "examples" || showAll) ? `
+              <div class="grid gap-6 lg:grid-cols-2">
+                <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs">
+                  <h2 class="text-lg font-bold text-indigo-950">Real-World Examples</h2>
+                  <div class="mt-4 space-y-4">
+                    ${s.examples.map((ex) => `
+                      <div class="rounded-xl border border-violet-100 bg-[#FAF8FF] p-4">
+                        <h3 class="text-sm font-bold text-indigo-950">${escapeHtml(ex.title)}</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-600"><strong>Scenario:</strong> ${escapeHtml(ex.scenario)}</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-700"><strong class="text-violet-700">Application:</strong> ${escapeHtml(ex.application)}</p>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+                <div class="rounded-2xl border border-violet-200/80 bg-white p-6 shadow-xs">
+                  <h2 class="text-lg font-bold text-indigo-950">Key Takeaways</h2>
+                  <ul class="mt-4 space-y-3">
+                    ${s.key_takeaways.map((t, idx) => `
+                      <li class="flex items-start gap-3 rounded-xl border border-violet-100 bg-violet-50/40 p-3.5 text-sm leading-relaxed text-indigo-950">
+                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white">${idx + 1}</span>
+                        <span>${escapeHtml(t)}</span>
+                      </li>
+                    `).join("")}
+                  </ul>
+                </div>
+              </div>` : ""}
+          </div>
+        </div>`;
+    }
+
+    function updateNavHighlights() {
+      document.querySelectorAll(".nav-btn").forEach((btn) => {
+        const active = btn.dataset.nav === state.route;
+        btn.className = active
+          ? "nav-btn rounded-xl px-4 py-2 text-sm font-semibold bg-violet-100 text-indigo-950 transition"
+          : "nav-btn rounded-xl px-4 py-2 text-sm font-medium text-slate-600 hover:bg-violet-50 hover:text-indigo-900 transition";
+      });
+    }
+
+    function render() {
+      updateNavHighlights();
+      updateApiBadge();
+      const main = document.getElementById("appMain");
+      if (state.route === "home") main.innerHTML = renderHomeView();
+      else if (state.route === "explore") main.innerHTML = renderExploreView();
+      else if (state.route === "saved") main.innerHTML = renderSavedView();
+      else if (state.route === "about") main.innerHTML = renderAboutView();
+      else if (state.route === "result") {
+        main.innerHTML = renderResultView();
+        if (state.activeTab === "flowchart" || state.activeTab === "all") {
+          hydrateMermaid();
+        }
+      }
+    }
+
+    // Boot
+    render();
+  </script>
+</body>
+</html>
+```
